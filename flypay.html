@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>FlyPay — Crew Salary Calculator by Aviation Time</title>
+  <meta name="description" content="FlyPay is the smart salary calculator built for Saudi airline crew. Calculates GOSI, night pay, layovers, productivity bonuses, and end-of-service rewards."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet"/>
+  <style>
+  :root{
+    --bg:#EEF4FF;--surface:#FFFFFF;--card:#F4F8FF;
+    --navy:#07112B;--deep:#0D1F45;--blue:#1B6FFF;--sky:#4D9FFF;--cyan:#00C2E0;
+    --text:#0A1628;--muted:#5A6E8C;--border:rgba(27,111,255,.14);--border-s:rgba(27,111,255,.28);
+    --green:#10B981;--red:#EF4444;--amber:#D97706;
+    --shadow:0 4px 24px rgba(7,17,43,.10);--shadow-l:0 12px 48px rgba(7,17,43,.16);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+  body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(27,111,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(27,111,255,.025) 1px,transparent 1px);background-size:52px 52px;}
+  img{display:block;max-width:100%;}
+  ::-webkit-scrollbar{width:5px;}
+  ::-webkit-scrollbar-thumb{background:var(--blue);border-radius:3px;}
+
+  /* Layout */
+  .container{max-width:1140px;margin:0 auto;padding:0 24px;}
+  .section{padding:88px 0;position:relative;z-index:1;}
+
+  /* Animations */
+  @keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+  @keyframes pulseBlue{0%,100%{box-shadow:0 0 0 0 rgba(27,111,255,.4)}50%{box-shadow:0 0 0 14px rgba(27,111,255,0)}}
+  .fu1{animation:fadeUp .6s .08s ease both;}
+  .fu2{animation:fadeUp .6s .16s ease both;}
+  .fu3{animation:fadeUp .6s .24s ease both;}
+  .fu4{animation:fadeUp .6s .32s ease both;}
+
+  /* Typography */
+  .section-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(1.9rem,4vw,2.9rem);line-height:1.1;color:var(--navy);margin-bottom:14px;}
+  .accent{color:var(--blue);}
+  .accent-c{color:var(--cyan);}
+  .mono-label{font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);}
+  .label-wrap{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+  .label-line{width:28px;height:2px;background:var(--cyan);border-radius:2px;flex-shrink:0;}
+
+  /* Buttons */
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.04em;border-radius:9px;padding:13px 28px;cursor:pointer;transition:all .2s;border:none;text-decoration:none;}
+  .btn-primary{background:var(--blue);color:#fff;}
+  .btn-primary:hover{background:#0f5ce8;transform:translateY(-2px);box-shadow:0 8px 28px rgba(27,111,255,.35);}
+  .btn-outline{background:transparent;color:var(--blue);border:1.5px solid var(--border-s);}
+  .btn-outline:hover{background:rgba(27,111,255,.06);border-color:var(--blue);transform:translateY(-2px);}
+  .badge{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:100px;}
+  .badge-green{background:rgba(16,185,129,.12);color:var(--green);}
+  .badge-blue{background:rgba(27,111,255,.12);color:var(--blue);}
+  .badge-sky{background:rgba(77,159,255,.12);color:var(--sky);}
+  .badge-cyan{background:rgba(0,194,224,.12);color:var(--cyan);}
+  .badge-muted{background:rgba(90,110,140,.1);color:var(--muted);}
+
+  /* Nav */
+  #nav{position:fixed;top:0;left:0;right:0;z-index:900;background:rgba(7,17,43,.96);backdrop-filter:blur(16px);border-bottom:1px solid rgba(27,111,255,.2);}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1200px;margin:0 auto;padding:0 24px;height:68px;}
+  .nav-logo{display:flex;align-items:center;gap:11px;text-decoration:none;}
+  .nav-wordmark{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;letter-spacing:.03em;text-transform:uppercase;color:#fff;}
+  .nav-wordmark span{color:var(--blue);}
+  .nav-sub{font-family:'IBM Plex Mono',monospace;font-size:.5rem;letter-spacing:.28em;text-transform:uppercase;color:var(--cyan);margin-top:2px;}
+  .nav-back{display:flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);text-decoration:none;transition:color .2s;}
+  .nav-back:hover{color:#fff;}
+
+  /* Hero */
+  .hero{min-height:calc(100vh - 68px);display:flex;align-items:center;padding:80px 0 60px;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--navy) 0%,var(--deep) 100%);}
+  .hero-bg-img{position:absolute;inset:0;background-image:url('https://images.unsplash.com/photo-1567793116203-9e9d1efec9f2?auto=format&fit=crop&w=1800&q=70');background-size:cover;background-position:center;opacity:.15;}
+  .hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;position:relative;z-index:2;}
+  .hero-tagline{font-family:'IBM Plex Mono',monospace;font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;color:var(--cyan);margin-bottom:14px;}
+  .hero-h1{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(2.8rem,6vw,4.6rem);line-height:1.04;color:#fff;margin-bottom:18px;}
+  .hero-sub{font-size:1.02rem;color:rgba(255,255,255,.7);line-height:1.8;margin-bottom:28px;}
+  .store-btns{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:24px;}
+  .store-btn{display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,.1);color:#fff;border-radius:12px;padding:12px 22px;font-family:'Barlow',sans-serif;font-size:.88rem;font-weight:600;transition:all .2s;border:1.5px solid rgba(255,255,255,.25);text-decoration:none;}
+  .store-btn:hover{background:rgba(255,255,255,.2);transform:translateY(-2px);}
+  .store-btn-icon{font-size:1.5rem;line-height:1;}
+  .store-btn-text .pre{font-size:.65rem;opacity:.7;display:block;font-weight:400;letter-spacing:.05em;}
+  .store-btn-text .main{font-size:1rem;font-weight:700;display:block;}
+  .version-row{display:flex;align-items:center;gap:12px;font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.1em;color:rgba(255,255,255,.4);}
+
+  /* Phone mockup */
+  .phone-outer{width:240px;height:490px;background:var(--navy);border-radius:44px;border:5px solid rgba(255,255,255,.12);position:relative;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.06);margin:0 auto;animation:float 7s ease-in-out infinite;}
+  .phone-screen{position:absolute;inset:0;background:linear-gradient(160deg,var(--deep) 0%,var(--navy) 100%);display:flex;flex-direction:column;overflow:hidden;}
+  .phone-notch{width:80px;height:8px;background:rgba(0,0,0,.6);border-radius:4px;position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:3;}
+  .phone-status{display:flex;justify-content:space-between;align-items:center;padding:28px 18px 10px;font-family:'IBM Plex Mono',monospace;font-size:.58rem;color:rgba(255,255,255,.5);}
+  .phone-header{background:linear-gradient(135deg,var(--blue),var(--sky));padding:16px 18px;display:flex;align-items:center;justify-content:space-between;}
+  .phone-app-name{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.1rem;color:#fff;letter-spacing:.04em;}
+  .phone-app-sub{font-family:'IBM Plex Mono',monospace;font-size:.5rem;color:rgba(255,255,255,.7);letter-spacing:.14em;text-transform:uppercase;margin-top:2px;}
+  .phone-body{flex:1;padding:14px;display:flex;flex-direction:column;gap:8px;overflow:hidden;}
+  .phone-card{background:rgba(255,255,255,.07);border-radius:10px;padding:12px;border:1px solid rgba(255,255,255,.08);}
+  .phone-card-label{font-family:'IBM Plex Mono',monospace;font-size:.52rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:4px;}
+  .phone-card-value{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.4rem;color:#fff;}
+  .phone-card-sub{font-size:.6rem;color:rgba(255,255,255,.4);margin-top:2px;}
+  .phone-tabs{display:flex;justify-content:space-around;padding:10px 8px 14px;border-top:1px solid rgba(255,255,255,.08);}
+  .phone-tab{display:flex;flex-direction:column;align-items:center;gap:3px;font-family:'IBM Plex Mono',monospace;font-size:.45rem;letter-spacing:.05em;color:rgba(255,255,255,.35);text-transform:uppercase;}
+  .phone-tab.active{color:var(--sky);}
+  .phone-tab-icon{font-size:.9rem;}
+
+  /* Features grid */
+  .features-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;}
+  .feature-card{padding:32px;position:relative;overflow:hidden;}
+  .feature-card::before{content:'';position:absolute;top:0;right:0;width:80px;height:80px;border-radius:0 16px 0 80px;background:rgba(27,111,255,.04);}
+  .feature-icon-wrap{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:16px;border:1px solid var(--border);}
+  .feature-icon-blue{background:linear-gradient(135deg,rgba(27,111,255,.12),rgba(27,111,255,.06));}
+  .feature-icon-cyan{background:linear-gradient(135deg,rgba(0,194,224,.12),rgba(0,194,224,.06));}
+  .feature-icon-sky{background:linear-gradient(135deg,rgba(77,159,255,.12),rgba(77,159,255,.06));}
+  .feature-icon-green{background:linear-gradient(135deg,rgba(16,185,129,.12),rgba(16,185,129,.06));}
+  .feature-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.05rem;color:var(--navy);margin-bottom:8px;letter-spacing:.02em;}
+  .feature-desc{color:var(--muted);font-size:.88rem;line-height:1.75;}
+  .feature-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;}
+
+  /* Rates table */
+  .rates-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);}
+  .rates-header{background:linear-gradient(135deg,var(--navy),var(--deep));padding:24px 28px;display:flex;align-items:center;justify-content:space-between;}
+  .rates-header h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.1rem;color:#fff;letter-spacing:.03em;}
+  .rates-table{width:100%;border-collapse:collapse;}
+  .rates-table th{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);padding:12px 20px;text-align:left;border-bottom:1px solid var(--border);background:var(--bg);}
+  .rates-table td{padding:14px 20px;border-bottom:1px solid var(--border);font-size:.9rem;color:var(--text);}
+  .rates-table tr:last-child td{border-bottom:none;}
+  .rates-table tr:hover td{background:var(--bg);}
+  .rate-val{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.05rem;color:var(--blue);}
+
+  /* Download section */
+  .download-section{background:linear-gradient(135deg,var(--navy) 0%,var(--deep) 100%);border-radius:24px;padding:64px;text-align:center;position:relative;overflow:hidden;}
+  .download-section::before{content:'';position:absolute;top:-80px;right:-80px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(27,111,255,.15),transparent 70%);}
+  .download-section h2{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(2rem,4vw,3rem);color:#fff;margin-bottom:14px;}
+  .download-section p{color:rgba(255,255,255,.6);max-width:480px;margin:0 auto 36px;line-height:1.75;}
+  .download-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+  .dl-btn{display:inline-flex;align-items:center;gap:12px;padding:14px 28px;border-radius:14px;text-decoration:none;transition:all .2s;min-width:180px;}
+  .dl-btn-apple{background:#000;color:#fff;border:1.5px solid rgba(255,255,255,.15);}
+  .dl-btn-google{background:#fff;color:var(--navy);border:1.5px solid rgba(255,255,255,.2);}
+  .dl-btn:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(0,0,0,.3);}
+  .dl-btn-text .pre{font-size:.65rem;display:block;font-weight:400;opacity:.7;letter-spacing:.05em;}
+  .dl-btn-text .main{font-size:.98rem;font-weight:700;display:block;}
+  .disclaimer-note{margin-top:20px;font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.1em;color:rgba(255,255,255,.3);}
+
+  /* Footer mini */
+  .mini-footer{background:var(--navy);padding:28px 0;border-top:1px solid rgba(27,111,255,.15);}
+  .mini-footer-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .mini-footer-copy{font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.08em;color:rgba(255,255,255,.35);}
+  .mini-footer-links{display:flex;gap:16px;}
+  .mini-footer-link{font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.08em;color:rgba(255,255,255,.35);text-decoration:none;background:none;border:none;cursor:pointer;transition:color .2s;}
+  .mini-footer-link:hover{color:rgba(255,255,255,.7);}
+
+  /* Card base */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);transition:all .3s;}
+  .card:hover{border-color:var(--border-s);box-shadow:var(--shadow-l);}
+
+  @media(max-width:1024px){.hero-grid{grid-template-columns:1fr;}.phone-outer{display:none;}}
+  @media(max-width:768px){.features-grid{grid-template-columns:1fr;}.download-section{padding:40px 24px;}.section{padding:60px 0;}}
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-inner">
+    <a class="nav-logo" href="/">
+      <svg width="32" height="32" viewBox="0 0 96 96" fill="none"><circle cx="48" cy="48" r="42" stroke="#1B6FFF" stroke-width="4" fill="none" opacity=".7"/><g transform="translate(48,48) rotate(-30)"><ellipse cx="0" cy="0" rx="3.5" ry="17" fill="#EEF4FF"/><path d="M-3,-2 L-22,10 L-22,14 L-3,5 Z" fill="#EEF4FF" opacity=".85"/><path d="M3,-2 L22,10 L22,14 L3,5 Z" fill="#EEF4FF" opacity=".85"/></g><circle cx="48" cy="48" r="3" fill="#1B6FFF"/></svg>
+      <div>
+        <div class="nav-wordmark">AVIATION <span>TIME</span></div>
+        <div class="nav-sub">Always Clear for Takeoff</div>
+      </div>
+    </a>
+    <a class="nav-back" href="/">← Back to Website</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="padding-top:68px">
+  <div class="hero-bg-img"></div>
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="fu1" style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+          <span style="display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:100px;padding:5px 14px;font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.85)">
+            <span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;animation:blink 1.5s infinite"></span>
+            Live on App Store &amp; Google Play
+          </span>
+        </div>
+        <div class="hero-tagline fu1">by Aviation Time</div>
+        <h1 class="hero-h1 fu2">FlyPay<br><span style="color:var(--sky);font-size:clamp(1.6rem,3.5vw,2.8rem);font-weight:600">Crew Salary Calculator</span></h1>
+        <p class="hero-sub fu3">The only salary calculator built specifically for Saudi airline crew. Calculate your monthly salary, GOSI, night pay, layovers, productivity bonuses, and end-of-service rewards — all in your pocket.</p>
+        <div class="store-btns fu4">
+          <a class="store-btn" id="apple-btn" href="#" target="_blank">
+            <div class="store-btn-icon">🍎</div>
+            <div class="store-btn-text">
+              <span class="pre">Download on the</span>
+              <span class="main">App Store</span>
+            </div>
+          </a>
+          <a class="store-btn" id="google-btn" href="#" target="_blank">
+            <div class="store-btn-icon">▶</div>
+            <div class="store-btn-text">
+              <span class="pre">Get it on</span>
+              <span class="main">Google Play</span>
+            </div>
+          </a>
+        </div>
+        <div class="version-row fu4">
+          <span class="badge badge-green">v1.0.0</span>
+          <span>Free</span>
+          <span>·</span>
+          <span>iOS &amp; Android</span>
+          <span>·</span>
+          <span>Arabic &amp; English</span>
+        </div>
+      </div>
+      <!-- Phone mockup -->
+      <div style="display:flex;justify-content:center">
+        <div class="phone-outer">
+          <div class="phone-screen">
+            <div class="phone-notch"></div>
+            <div class="phone-status">
+              <span>9:41</span>
+              <span>●●●</span>
+            </div>
+            <div class="phone-header">
+              <div>
+                <div class="phone-app-name">💳 FlyPay</div>
+                <div class="phone-app-sub">by Aviation Time</div>
+              </div>
+              <span style="font-size:.6rem;background:rgba(255,255,255,.2);padding:3px 8px;border-radius:100px;font-family:'IBM Plex Mono',monospace;letter-spacing:.06em">v1.0</span>
+            </div>
+            <div class="phone-body">
+              <div class="phone-card">
+                <div class="phone-card-label">Net Salary (Est.)</div>
+                <div class="phone-card-value">12,450</div>
+                <div class="phone-card-sub">SAR · After GOSI deduction</div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                <div class="phone-card">
+                  <div class="phone-card-label">Block Hrs</div>
+                  <div class="phone-card-value" style="font-size:1.1rem">85:30</div>
+                </div>
+                <div class="phone-card">
+                  <div class="phone-card-label">Layovers</div>
+                  <div class="phone-card-value" style="font-size:1.1rem">3</div>
+                </div>
+              </div>
+              <div class="phone-card">
+                <div class="phone-card-label">GOSI Deduction</div>
+                <div class="phone-card-value" style="font-size:1.1rem;color:var(--cyan)">-987 SAR</div>
+                <div class="phone-card-sub">9% of basic salary</div>
+              </div>
+            </div>
+            <div class="phone-tabs">
+              <div class="phone-tab active"><div class="phone-tab-icon">💳</div>Calc</div>
+              <div class="phone-tab"><div class="phone-tab-icon">📊</div>Rates</div>
+              <div class="phone-tab"><div class="phone-tab-icon">🕐</div>Time</div>
+              <div class="phone-tab"><div class="phone-tab-icon">✈️</div>Layover</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section" style="background:var(--bg)">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:52px">
+      <div class="label-wrap" style="justify-content:center"><div class="label-line"></div><span class="mono-label">App Features</span><div class="label-line"></div></div>
+      <h2 class="section-title">Everything a Crew Member <span class="accent">Needs</span></h2>
+      <p style="color:var(--muted);max-width:500px;margin:10px auto 0;line-height:1.8">Four powerful tools in one app, designed with real aviation professionals in mind.</p>
+    </div>
+    <div class="features-grid">
+      <div class="card feature-card">
+        <div class="feature-icon-wrap feature-icon-blue">💳</div>
+        <div class="feature-title">Salary Calculator</div>
+        <p class="feature-desc">Calculate your full monthly salary by entering block hours, night hours, days off, and layover time. FlyPay automatically applies productivity bonuses, flying bonuses, and deductions based on your rank and aircraft category.</p>
+        <div class="feature-tags">
+          <span class="badge badge-blue">Block Hours</span>
+          <span class="badge badge-sky">Night Pay</span>
+          <span class="badge badge-cyan">GOSI</span>
+          <span class="badge badge-muted">Rank-based</span>
+        </div>
+      </div>
+      <div class="card feature-card">
+        <div class="feature-icon-wrap feature-icon-cyan">✈️</div>
+        <div class="feature-title">Layover Calculator</div>
+        <p class="feature-desc">Track all your layovers with automatic pay calculations. Log each layover by destination, arrival and departure time, and type. The app automatically calculates your total layover allowance.</p>
+        <div class="feature-tags">
+          <span class="badge badge-cyan">DOM: 20 SAR/hr</span>
+          <span class="badge badge-blue">INTL: 25 SAR/hr</span>
+          <span class="badge badge-muted">Auto-calculate</span>
+        </div>
+      </div>
+      <div class="card feature-card">
+        <div class="feature-icon-wrap feature-icon-sky">🕐</div>
+        <div class="feature-title">Time Calculator</div>
+        <p class="feature-desc">Add, subtract, multiply, and divide flight times in HH:MM format. Perfect for logbook calculations, duty time tracking, and rest period management.</p>
+        <div class="feature-tags">
+          <span class="badge badge-sky">HH:MM Format</span>
+          <span class="badge badge-muted">Logbook Ready</span>
+          <span class="badge badge-muted">Duty Time</span>
+        </div>
+      </div>
+      <div class="card feature-card">
+        <div class="feature-icon-wrap feature-icon-green">📊</div>
+        <div class="feature-title">My Rates &amp; Benefits</div>
+        <p class="feature-desc">View your personalized rates including overtime, night pay, layover rates, and calculate your End of Service Reward (EOSR). Understand exactly what you're entitled to at any point in your career.</p>
+        <div class="feature-tags">
+          <span class="badge badge-green">EOSR Calculator</span>
+          <span class="badge badge-blue">Overtime Rates</span>
+          <span class="badge badge-sky">Benefit Summary</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RATES TABLE -->
+<section class="section" style="background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px">
+      <div>
+        <div class="label-wrap"><div class="label-line"></div><span class="mono-label">Standard Rates</span></div>
+        <h2 class="section-title">Transparent Pay <span class="accent">Rates</span></h2>
+        <p style="color:var(--muted);line-height:1.8;margin-bottom:28px;font-size:.95rem">FlyPay uses standard Saudi aviation industry pay rates. All calculations are transparent and based on publicly available information.</p>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;gap:10px;font-size:.9rem;color:var(--muted)"><span style="color:var(--green);font-size:1rem">✓</span>Based on industry standard formulas</div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:.9rem;color:var(--muted)"><span style="color:var(--green);font-size:1rem">✓</span>GOSI calculated at official 9% employee rate</div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:.9rem;color:var(--muted)"><span style="color:var(--green);font-size:1rem">✓</span>All data stored locally on your device only</div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:.9rem;color:var(--muted)"><span style="color:var(--amber);font-size:1rem">⚠</span>For reference only — verify with your payroll department</div>
+        </div>
+      </div>
+      <div>
+        <div class="rates-card">
+          <div class="rates-header">
+            <h3>Layover Pay Rates</h3>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;background:rgba(255,255,255,.1);padding:4px 10px;border-radius:100px;color:rgba(255,255,255,.6)">SAR / Hour</span>
+          </div>
+          <table class="rates-table">
+            <thead><tr><th>Type</th><th>Rate</th><th>Min Duration</th></tr></thead>
+            <tbody>
+              <tr><td>🇸🇦 Domestic Layover</td><td><span class="rate-val">20 SAR/hr</span></td><td>2+ hours</td></tr>
+              <tr><td>🌍 International Layover</td><td><span class="rate-val">25 SAR/hr</span></td><td>2+ hours</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="rates-card" style="margin-top:16px">
+          <div class="rates-header"><h3>GOSI Contribution</h3></div>
+          <table class="rates-table">
+            <thead><tr><th>Party</th><th>Rate</th><th>Basis</th></tr></thead>
+            <tbody>
+              <tr><td>Employee</td><td><span class="rate-val">9%</span></td><td>Basic salary</td></tr>
+              <tr><td>Employer</td><td><span class="rate-val">11.75%</span></td><td>Basic salary</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOAD -->
+<section class="section">
+  <div class="container">
+    <div class="download-section">
+      <div style="position:relative;z-index:1">
+        <div class="mono-label" style="color:rgba(255,255,255,.35);margin-bottom:14px;display:block;text-align:center">Download FlyPay</div>
+        <h2>Get FlyPay on Your Device</h2>
+        <p>Free to download. Available for iPhone and Android. Your data stays private — stored only on your device, never on our servers.</p>
+        <div class="download-btns">
+          <a class="dl-btn dl-btn-apple" id="dl-apple" href="#" target="_blank">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98l-.09.06c-.22.15-2.19 1.28-2.17 3.82.03 3.02 2.65 4.03 2.68 4.04l-.06.26zM13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            <div class="dl-btn-text">
+              <span class="pre">Download on the</span>
+              <span class="main">App Store</span>
+            </div>
+          </a>
+          <a class="dl-btn dl-btn-google" id="dl-google" href="#" target="_blank">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M3.18 23.76c.38.2.82.3 1.32.25l12.9-7.44-2.8-2.8-11.42 10z" fill="#EA4335"/><path d="M20.96 10.24l-2.78-1.6-3.14 2.76 3.14 3.14 2.8-1.62c.8-.46.8-1.22-.02-1.68z" fill="#FBBC05"/><path d="M4.5.22C4.02-.05 3.46-.07 3.02.16L14.62 11.76l2.8-2.8L4.5.22z" fill="#4285F4"/><path d="M3.02.16c-.44.23-.84.72-.84 1.56v20.56c0 .84.4 1.33.84 1.56l11.6-11.6L3.02.16z" fill="#34A853"/></svg>
+            <div class="dl-btn-text" style="color:var(--navy)">
+              <span class="pre" style="color:var(--muted)">Get it on</span>
+              <span class="main">Google Play</span>
+            </div>
+          </a>
+        </div>
+        <div class="disclaimer-note">FlyPay is for reference purposes only. Always verify calculations with your official payroll department.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MINI FOOTER -->
+<div class="mini-footer">
+  <div class="container">
+    <div class="mini-footer-inner">
+      <div class="mini-footer-copy">© <span id="fp-yr"></span> Aviation Time Company · Jeddah, Saudi Arabia · <a href="mailto:support@aviationtime.com" style="color:rgba(255,255,255,.35);text-decoration:none">support@aviationtime.com</a></div>
+      <div class="mini-footer-links">
+        <a href="/" class="mini-footer-link">← Main Site</a>
+        <a href="/#legal" class="mini-footer-link" onclick="sessionStorage.setItem('legalTab','terms')">Terms</a>
+        <a href="/#legal" class="mini-footer-link" onclick="sessionStorage.setItem('legalTab','privacy')">Privacy</a>
+        <a href="/#legal" class="mini-footer-link" onclick="sessionStorage.setItem('legalTab','disclaimer')">Disclaimer</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+document.getElementById('fp-yr').textContent = new Date().getFullYear();
+
+/* Load app store links from admin settings */
+function getCfg(){try{return JSON.parse(localStorage.getItem('at-site-config')||'{}')}catch(e){return{};}}
+function loadLinks(){
+  var cfg = getCfg();
+  var apple  = cfg['flypay_apple_url']  || '#';
+  var google = cfg['flypay_google_url'] || '#';
+  ['apple-btn','dl-apple'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el){ el.href = apple; if(apple==='#'){el.style.opacity='.5';el.style.cursor='not-allowed';} }
+  });
+  ['google-btn','dl-google'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el){ el.href = google; if(google==='#'){el.style.opacity='.5';el.style.cursor='not-allowed';} }
+  });
+}
+loadLinks();
+</script>
+</body>
+</html>

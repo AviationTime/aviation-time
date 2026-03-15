@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Admin Console — Aviation Time</title>
+  <meta name="robots" content="noindex,nofollow"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+  :root{--bg:#EEF4FF;--surface:#fff;--navy:#07112B;--deep:#0D1F45;--blue:#1B6FFF;--sky:#4D9FFF;--cyan:#00C2E0;--text:#0A1628;--muted:#5A6E8C;--border:rgba(27,111,255,.14);--border-s:rgba(27,111,255,.28);--green:#10B981;--red:#EF4444;--amber:#D97706;--shadow:0 4px 24px rgba(7,17,43,.10);}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
+  /* Auth screen */
+  #auth-screen{position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,var(--navy),var(--deep));display:flex;align-items:center;justify-content:center;}
+  .auth-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px 36px;width:90%;max-width:400px;box-shadow:0 24px 80px rgba(0,0,0,.3);}
+  .auth-logo{text-align:center;margin-bottom:28px;}
+  .auth-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.5rem;color:var(--navy);margin-bottom:6px;}
+  .auth-sub{color:var(--muted);font-size:.88rem;margin-bottom:22px;}
+  .auth-err{color:var(--red);font-size:.82rem;margin-top:10px;font-family:'IBM Plex Mono',monospace;display:none;}
+  /* Inputs */
+  .fi{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-family:'Barlow',sans-serif;font-size:.95rem;padding:11px 14px;transition:border-color .2s;outline:none;margin-bottom:12px;}
+  .fi:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(27,111,255,.1);}
+  .fi::placeholder{color:rgba(90,110,140,.4);}
+  textarea.fi{resize:vertical;min-height:80px;}
+  select.fi option{background:var(--surface);}
+  .fl{display:block;font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+  /* Buttons */
+  .btn-p{display:inline-flex;align-items:center;gap:7px;background:var(--blue);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;letter-spacing:.04em;border:none;border-radius:8px;padding:11px 22px;cursor:pointer;transition:all .2s;}
+  .btn-p:hover{background:#0f5ce8;}
+  .btn-p.full{width:100%;justify-content:center;padding:13px;}
+  .btn-o{background:transparent;color:var(--blue);border:1.5px solid var(--border-s);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.04em;border-radius:8px;padding:10px 18px;cursor:pointer;transition:all .2s;}
+  .btn-o:hover{background:rgba(27,111,255,.06);}
+  .btn-d{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);border-radius:6px;padding:5px 12px;font-size:.78rem;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:all .2s;}
+  .btn-d:hover{background:rgba(239,68,68,.2);}
+  .save-btn{background:var(--blue);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.04em;cursor:pointer;transition:all .2s;margin-top:8px;}
+  .save-btn:hover{background:#0f5ce8;}
+  /* Layout */
+  #app{display:flex;min-height:100vh;}
+  #sidebar{width:230px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);min-height:100vh;padding:20px 12px;display:flex;flex-direction:column;gap:2px;position:sticky;top:0;overflow-y:auto;}
+  #main{flex:1;padding:36px;overflow-y:auto;min-width:0;}
+  .side-logo{display:flex;align-items:center;gap:8px;padding:0 6px 18px;margin-bottom:6px;border-bottom:1px solid var(--border);}
+  .side-logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.88rem;color:var(--navy);}
+  .side-sec{font-family:'IBM Plex Mono',monospace;font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);padding:10px 8px 4px;}
+  .tab-btn{display:flex;align-items:center;gap:9px;width:100%;text-align:left;padding:9px 12px;border-radius:8px;background:none;border:none;cursor:pointer;color:var(--muted);font-family:'Barlow',sans-serif;font-size:.88rem;font-weight:500;transition:all .2s;}
+  .tab-btn:hover{color:var(--navy);background:var(--bg);}
+  .tab-btn.active{color:var(--blue);background:rgba(27,111,255,.08);font-weight:600;}
+  .tab-icon{font-size:.88rem;width:18px;text-align:center;flex-shrink:0;}
+  /* Panels */
+  .panel{display:none;}
+  .panel.active{display:block;}
+  .panel-header{margin-bottom:26px;}
+  .panel-header h2{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.55rem;color:var(--navy);}
+  .panel-header p{color:var(--muted);font-size:.9rem;margin-top:4px;}
+  /* Cards */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;box-shadow:var(--shadow);}
+  .card-title{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+  .card-sub-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;color:var(--navy);margin:0 0 14px;}
+  /* Stats */
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;box-shadow:var(--shadow);}
+  .stat-lbl{font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+  .stat-val{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:2rem;color:var(--navy);}
+  /* Badge */
+  .badge{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:100px;}
+  .bg-green{background:rgba(16,185,129,.12);color:var(--green);}
+  .bg-blue{background:rgba(27,111,255,.12);color:var(--blue);}
+  .bg-muted{background:rgba(90,110,140,.1);color:var(--muted);}
+  .bg-cyan{background:rgba(0,194,224,.12);color:var(--cyan);}
+  .bg-red{background:rgba(239,68,68,.12);color:var(--red);}
+  /* Tables */
+  .tbl-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);}
+  table{width:100%;border-collapse:collapse;}
+  th{text-align:left;padding:10px 14px;font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);background:var(--bg);}
+  td{padding:13px 14px;border-bottom:1px solid var(--border);vertical-align:middle;font-size:.88rem;}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:var(--bg);}
+  /* CMS tabs */
+  .cms-tabs{display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap;}
+  .cms-tab{padding:8px 16px;border-radius:100px;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+  .cms-tab.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+  .field-group{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:14px;box-shadow:var(--shadow);}
+  .field-group-title{font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;color:var(--cyan);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .field-group-title::after{content:'';flex:1;height:1px;background:var(--border);max-width:60px;}
+  /* Color */
+  .color-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+  .color-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;box-shadow:var(--shadow);}
+  .color-swatch{width:100%;height:40px;border-radius:7px;border:1px solid var(--border);cursor:pointer;transition:transform .15s;}
+  .color-swatch:hover{transform:scale(1.04);}
+  .color-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;color:var(--navy);margin-top:8px;}
+  .color-hex{font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--muted);margin-top:2px;}
+  /* API */
+  .api-method{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.68rem;padding:3px 8px;border-radius:5px;letter-spacing:.06em;}
+  .m-get{background:rgba(16,185,129,.12);color:var(--green);}
+  .m-post{background:rgba(27,111,255,.12);color:var(--blue);}
+  .m-put{background:rgba(245,158,11,.12);color:#D97706;}
+  .m-delete{background:rgba(239,68,68,.12);color:var(--red);}
+  .m-patch{background:rgba(0,194,224,.12);color:var(--cyan);}
+  .api-row{display:flex;align-items:center;gap:10px;padding:13px 16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all .2s;}
+  .api-row:hover{border-color:var(--border-s);box-shadow:var(--shadow);}
+  .api-path{font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--navy);flex:1;}
+  .api-resp{background:var(--navy);color:#a8d8ff;font-family:'IBM Plex Mono',monospace;font-size:.78rem;border-radius:10px;padding:16px;min-height:80px;max-height:340px;overflow-y:auto;line-height:1.7;white-space:pre-wrap;word-break:break-all;margin-top:12px;}
+  .api-resp.ok{border-left:3px solid var(--green);}
+  .api-resp.err{border-left:3px solid var(--red);color:#fca5a5;}
+  /* Media */
+  .media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;}
+  .media-card{background:var(--surface);border:1.5px solid var(--border);border-radius:10px;overflow:hidden;cursor:pointer;transition:all .2s;}
+  .media-card:hover{border-color:var(--blue);box-shadow:var(--shadow);}
+  .media-thumb{width:100%;height:120px;object-fit:cover;background:var(--bg);}
+  .media-info{padding:10px 12px;}
+  .media-name{font-family:'IBM Plex Mono',monospace;font-size:.64rem;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  /* Toast */
+  #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:11px 20px;border-radius:100px;font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.08em;display:flex;align-items:center;gap:7px;z-index:9999;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;border:1px solid rgba(0,194,224,.3);}
+  #toast.show{opacity:1;}
+  input[type=color]{position:fixed;left:-9999px;opacity:0;}
+  @media(max-width:900px){.stats-grid{grid-template-columns:1fr 1fr;}.color-grid{grid-template-columns:1fr 1fr 1fr;}}
+  @media(max-width:640px){#sidebar{display:none;}#main{padding:20px;}}
+  </style>
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <svg width="48" height="48" viewBox="0 0 96 96" fill="none"><circle cx="48" cy="48" r="42" stroke="#1B6FFF" stroke-width="4" fill="none" opacity=".7"/><g transform="translate(48,48) rotate(-30)"><ellipse cx="0" cy="0" rx="3.5" ry="17" fill="#07112B"/><path d="M-3,-2 L-22,10 L-22,14 L-3,5 Z" fill="#07112B" opacity=".85"/><path d="M3,-2 L22,10 L22,14 L3,5 Z" fill="#07112B" opacity=".85"/></g><circle cx="48" cy="48" r="3" fill="#1B6FFF"/></svg>
+    </div>
+    <div class="auth-title">Admin Console</div>
+    <p class="auth-sub">Aviation Time · Restricted Access</p>
+    <label class="fl">Admin Password</label>
+    <input class="fi" id="auth-pass" type="password" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')checkAuth()"/>
+    <button class="btn-p full" onclick="checkAuth()">Access Console →</button>
+    <div class="auth-err" id="auth-err">Incorrect password. Try again.</div>
+    <p style="margin-top:16px;font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:rgba(90,110,140,.5);text-align:center">Default: admin123 (change in Settings)</p>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app" style="display:none">
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <div class="side-logo">
+      <svg width="22" height="22" viewBox="0 0 96 96" fill="none"><circle cx="48" cy="48" r="42" stroke="#1B6FFF" stroke-width="5" fill="none" opacity=".6"/><g transform="translate(48,48) rotate(-30)"><ellipse cx="0" cy="0" rx="3" ry="14" fill="#07112B"/><path d="M-3,-1 L-18,8 L-18,12 L-3,4 Z" fill="#07112B"/><path d="M3,-1 L18,8 L18,12 L3,4 Z" fill="#07112B"/></g><circle cx="48" cy="48" r="3" fill="#1B6FFF"/></svg>
+      <div class="side-logo-text">Admin Console</div>
+    </div>
+    <div class="side-sec">Overview</div>
+    <button class="tab-btn active" id="sb-dashboard" onclick="switchTab('dashboard')"><span class="tab-icon">📊</span>Dashboard</button>
+    <div class="side-sec">Content</div>
+    <button class="tab-btn" id="sb-content"   onclick="switchTab('content')"><span class="tab-icon">✎</span>Page Text</button>
+    <button class="tab-btn" id="sb-colors"    onclick="switchTab('colors')"><span class="tab-icon">◉</span>Brand Colors</button>
+    <button class="tab-btn" id="sb-media"     onclick="switchTab('media')"><span class="tab-icon">🖼</span>Images</button>
+    <button class="tab-btn" id="sb-social"    onclick="switchTab('social')"><span class="tab-icon">🔗</span>Social Links</button>
+    <div class="side-sec">Apps</div>
+    <button class="tab-btn" id="sb-applinks"  onclick="switchTab('applinks')"><span class="tab-icon">📱</span>App Store Links</button>
+    <button class="tab-btn" id="sb-api"       onclick="switchTab('api')"><span class="tab-icon">⚡</span>API Console</button>
+    <div class="side-sec">System</div>
+    <button class="tab-btn" id="sb-settings"  onclick="switchTab('settings')"><span class="tab-icon">⚙</span>Settings</button>
+    <div style="flex:1"></div>
+    <a href="/" style="display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:8px;color:var(--muted);font-family:'Barlow',sans-serif;font-size:.85rem;text-decoration:none;transition:all .2s" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='none'">← View Website</a>
+  </div>
+
+  <!-- Main content -->
+  <div id="main">
+
+    <!-- DASHBOARD -->
+    <div class="panel active" id="tab-dashboard">
+      <div class="panel-header"><h2>Dashboard</h2><p>Aviation Time Admin Console</p></div>
+      <div class="stats-grid" id="dash-stats"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div class="card">
+          <div class="card-title">Quick Actions</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button class="btn-o" style="justify-content:flex-start;gap:10px" onclick="switchTab('content')">✎ &nbsp;Edit Page Text</button>
+            <button class="btn-o" style="justify-content:flex-start;gap:10px" onclick="switchTab('social')">🔗 &nbsp;Set Social Media Links</button>
+            <button class="btn-o" style="justify-content:flex-start;gap:10px" onclick="switchTab('applinks')">📱 &nbsp;Set App Store Links</button>
+            <button class="btn-o" style="justify-content:flex-start;gap:10px" onclick="switchTab('media')">🖼 &nbsp;Manage Images</button>
+            <button class="btn-o" style="justify-content:flex-start;gap:10px" onclick="switchTab('api')">⚡ &nbsp;API Console</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Site Status</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:.9rem"><span style="color:var(--muted)">Main Website</span><span class="badge bg-green">Live</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:.9rem"><span style="color:var(--muted)">FlyPay Page</span><span class="badge bg-green">Live</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:.9rem"><span style="color:var(--muted)">App Store Link</span><span class="badge bg-muted" id="dash-apple-status">Not Set</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:.9rem"><span style="color:var(--muted)">Google Play Link</span><span class="badge bg-muted" id="dash-google-status">Not Set</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:.9rem"><span style="color:var(--muted)">Social Links</span><span class="badge bg-muted" id="dash-social-status">0 set</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE TEXT -->
+    <div class="panel" id="tab-content">
+      <div class="panel-header"><h2>Page Text Editor</h2><p>Edit any text on the website. Changes apply live.</p></div>
+      <div class="cms-tabs">
+        <button class="cms-tab active" onclick="cmsPage('home',this)">🏠 Home</button>
+        <button class="cms-tab" onclick="cmsPage('apps',this)">📱 Apps</button>
+        <button class="cms-tab" onclick="cmsPage('about',this)">ℹ About</button>
+        <button class="cms-tab" onclick="cmsPage('flypay',this)">💳 FlyPay</button>
+        <button class="cms-tab" onclick="cmsPage('nav',this)">🔗 Nav</button>
+      </div>
+      <div id="cms-body"></div>
+    </div>
+
+    <!-- BRAND COLORS -->
+    <div class="panel" id="tab-colors">
+      <div class="panel-header"><h2>Brand Colors</h2><p>Click any swatch to change it. Changes apply live across the site.</p></div>
+      <div class="color-grid" id="color-grid"></div>
+      <div style="display:flex;gap:10px;margin-top:18px">
+        <button class="save-btn" onclick="saveColors()">💾 Save Colors</button>
+        <button class="btn-o" onclick="resetColors()">↺ Reset Defaults</button>
+      </div>
+      <input type="color" id="clr-picker"/>
+    </div>
+
+    <!-- IMAGES -->
+    <div class="panel" id="tab-media">
+      <div class="panel-header"><h2>Images</h2><p>Update images across the website.</p></div>
+      <div class="field-group">
+        <div class="field-group-title">Add Image by URL</div>
+        <div style="display:grid;grid-template-columns:1fr 200px 110px;gap:10px;align-items:end">
+          <div><label class="fl">Image URL</label><input class="fi" id="media-url" placeholder="https://images.unsplash.com/..." style="margin:0"/></div>
+          <div><label class="fl">Label</label><input class="fi" id="media-name" placeholder="Hero Background" style="margin:0"/></div>
+          <button class="save-btn" style="margin:0;height:42px" onclick="addMedia()">+ Add</button>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-group-title">Apply to Section</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end">
+          <div><label class="fl">Section</label>
+            <select class="fi" id="media-section" style="margin:0">
+              <option value="img_hero_bg">Hero Background</option>
+              <option value="img_hero_side">Hero Side Photo</option>
+              <option value="img_strip">Photo Strip</option>
+              <option value="img_prob">Problem/Solution Photo</option>
+              <option value="img_sky">Sky Banner</option>
+              <option value="img_cta_bg">CTA Background</option>
+              <option value="img_about">About Page Photo</option>
+            </select>
+          </div>
+          <div><label class="fl">Image URL</label><input class="fi" id="media-apply-url" placeholder="Paste URL" style="margin:0"/></div>
+          <button class="save-btn" style="margin:0;height:42px" onclick="applyMedia()">Apply</button>
+        </div>
+      </div>
+      <div class="card-title" style="margin-bottom:12px">Image Library</div>
+      <div class="media-grid" id="media-grid"></div>
+    </div>
+
+    <!-- SOCIAL LINKS -->
+    <div class="panel" id="tab-social">
+      <div class="panel-header"><h2>Social Media Links</h2><p>Set the URLs for social media icons shown in the footer and Contact page.</p></div>
+      <div class="field-group">
+        <div class="field-group-title">Social Profiles</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div>
+            <label class="fl">𝕏 &nbsp;X (Twitter) URL</label>
+            <input class="fi" id="social-x-inp" placeholder="https://x.com/aviationtime" style="margin:0"/>
+          </div>
+          <div>
+            <label class="fl">👻 &nbsp;Snapchat URL</label>
+            <input class="fi" id="social-snap-inp" placeholder="https://snapchat.com/add/aviationtime" style="margin:0"/>
+          </div>
+          <div>
+            <label class="fl">📸 &nbsp;Instagram URL</label>
+            <input class="fi" id="social-ig-inp" placeholder="https://instagram.com/aviationtime" style="margin:0"/>
+          </div>
+          <div>
+            <label class="fl">💼 &nbsp;LinkedIn URL</label>
+            <input class="fi" id="social-li-inp" placeholder="https://linkedin.com/company/aviationtime" style="margin:0"/>
+          </div>
+        </div>
+        <button class="save-btn" onclick="saveSocial()">💾 Save Social Links</button>
+      </div>
+      <div class="card" style="padding:20px;margin-top:4px">
+        <div class="card-title">Note</div>
+        <p style="color:var(--muted);font-size:.88rem;line-height:1.7">Social media icons are displayed in the footer on every page and on the Contact page. Links you leave blank will be shown grayed out and non-clickable until a URL is added.</p>
+      </div>
+    </div>
+
+    <!-- APP STORE LINKS -->
+    <div class="panel" id="tab-applinks">
+      <div class="panel-header"><h2>App Store Links</h2><p>Set the download links for FlyPay on each platform. These appear on the FlyPay page (/flypay).</p></div>
+      <div class="field-group">
+        <div class="field-group-title">FlyPay Download Links</div>
+        <div class="form-group" style="margin-bottom:16px">
+          <label class="fl">🍎 &nbsp;Apple App Store URL</label>
+          <input class="fi" id="apple-url-inp" placeholder="https://apps.apple.com/app/flypay/..." style="margin:0"/>
+          <p style="color:var(--muted);font-size:.78rem;margin-top:6px;font-family:'IBM Plex Mono',monospace">Leave blank until app is published on App Store</p>
+        </div>
+        <div>
+          <label class="fl">▶ &nbsp;Google Play Store URL</label>
+          <input class="fi" id="google-url-inp" placeholder="https://play.google.com/store/apps/details?id=..." style="margin:0"/>
+          <p style="color:var(--muted);font-size:.78rem;margin-top:6px;font-family:'IBM Plex Mono',monospace">Leave blank until app is published on Google Play</p>
+        </div>
+        <button class="save-btn" onclick="saveAppLinks()">💾 Save App Store Links</button>
+      </div>
+      <div class="card" style="padding:20px;margin-top:4px">
+        <div class="card-title">Current Status</div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:4px">
+          <div style="display:flex;align-items:center;gap:8px;font-size:.88rem"><span id="apple-status-badge" class="badge bg-muted">Not Set</span>App Store</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:.88rem"><span id="google-status-badge" class="badge bg-muted">Not Set</span>Google Play</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- API CONSOLE -->
+    <div class="panel" id="tab-api">
+      <div class="panel-header"><h2>API Console</h2><p>Connect your backend API, test endpoints, and manage app data.</p></div>
+      <div class="field-group">
+        <div class="field-group-title">API Configuration</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div><label class="fl">Base URL</label><input class="fi" id="api-base" placeholder="https://api.aviationtime.com/v1" style="margin:0"/></div>
+          <div><label class="fl">API Key / Token</label><input class="fi" id="api-key" type="password" placeholder="Bearer token…" style="margin:0"/></div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button class="save-btn" onclick="saveApiCfg()">Save</button>
+          <button class="btn-o" onclick="testApi()">⚡ Test Connection</button>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-group-title">Request Builder</div>
+        <div style="display:grid;grid-template-columns:120px 1fr auto;gap:10px;align-items:end;margin-bottom:10px">
+          <div><label class="fl">Method</label><select class="fi" id="api-method" style="margin:0"><option>GET</option><option>POST</option><option>PUT</option><option>PATCH</option><option>DELETE</option></select></div>
+          <div><label class="fl">Endpoint Path</label><input class="fi" id="api-path" placeholder="/users" style="margin:0"/></div>
+          <button class="save-btn" style="margin:0;height:42px;white-space:nowrap" onclick="sendReq()">Send →</button>
+        </div>
+        <label class="fl">Request Body (JSON)</label>
+        <textarea class="fi" id="api-body" placeholder='{"key": "value"}' style="font-family:'IBM Plex Mono',monospace;font-size:.8rem;min-height:80px"></textarea>
+      </div>
+      <div class="field-group">
+        <div class="field-group-title" style="display:flex;justify-content:space-between;align-items:center">Response <span id="api-meta" style="font-size:.68rem;color:var(--muted);font-family:'IBM Plex Mono',monospace"></span></div>
+        <div class="api-resp" id="api-resp">Ready. Configure API and send a request.</div>
+      </div>
+      <div class="card-title" style="margin-bottom:10px">Quick Endpoints</div>
+      <div id="api-quick"></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="panel" id="tab-settings">
+      <div class="panel-header"><h2>Settings</h2><p>Site identity, admin password, and data management.</p></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div class="card">
+          <div class="card-sub-title">Site Identity</div>
+          <label class="fl">Browser Tab Title</label><input class="fi" id="set-title" placeholder="Aviation Time — Always Clear for Takeoff"/>
+          <label class="fl">Brand Name</label><input class="fi" id="set-brand" placeholder="AVIATION TIME"/>
+          <label class="fl">Nav Tagline</label><input class="fi" id="set-tagline" placeholder="Always Clear for Takeoff"/>
+          <button class="save-btn" onclick="saveIdentity()">Save Identity</button>
+        </div>
+        <div class="card">
+          <div class="card-sub-title">Admin Password</div>
+          <label class="fl">Current Password</label><input class="fi" id="pw-current" type="password" placeholder="Current password"/>
+          <label class="fl">New Password</label><input class="fi" id="pw-new" type="password" placeholder="New password"/>
+          <label class="fl">Confirm New Password</label><input class="fi" id="pw-confirm" type="password" placeholder="Confirm new password"/>
+          <button class="save-btn" onclick="changePassword()">Change Password</button>
+        </div>
+        <div class="card">
+          <div class="card-sub-title">Data Management</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button class="btn-o" style="justify-content:flex-start" onclick="exportData()">📤 Export Config JSON</button>
+            <button class="btn-o" style="justify-content:flex-start" onclick="importData()">📥 Import Config JSON</button>
+            <button class="btn-d" style="padding:10px;border-radius:8px;font-size:.88rem;width:100%" onclick="resetAll()">🗑 Reset All Customizations</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-sub-title">Console Info</div>
+          <p style="color:var(--muted);font-size:.85rem;line-height:1.8"><strong style="color:var(--navy)">Aviation Time Admin Console v3.1</strong><br>Manages main website and FlyPay page.<br>Data stored in browser localStorage.</p>
+          <div style="margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:.64rem;color:var(--cyan);letter-spacing:.1em">FLIGHT STATUS: ADMIN CLEARED</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<div id="toast">✓ <span id="toast-msg"></span></div>
+
+<script>
+'use strict';
+var $=function(id){return document.getElementById(id);};
+
+/* ── Storage ── */
+function getCfg(){try{return JSON.parse(localStorage.getItem('at-site-config')||'{}')}catch(e){return{};}}
+function saveCfg(c){localStorage.setItem('at-site-config',JSON.stringify(c));}
+function getSetting(k,d){var c=getCfg();return c[k]!==undefined?c[k]:d;}
+function setSetting(k,v){var c=getCfg();c[k]=v;saveCfg(c);}
+function getColors(){try{return JSON.parse(localStorage.getItem('at-colors')||'{}')}catch(e){return{};}}
+function getMedia(){try{return JSON.parse(localStorage.getItem('at-media')||'[]')}catch(e){return[];}}
+function saveMedia(a){localStorage.setItem('at-media',JSON.stringify(a));}
+
+/* ── Auth ── */
+var PASS_KEY='at-admin-pass';
+function getPass(){return localStorage.getItem(PASS_KEY)||'admin123';}
+function checkAuth(){
+  var p=$('auth-pass').value;
+  if(p===getPass()){
+    $('auth-screen').style.display='none';
+    $('app').style.display='flex';
+    initAdmin();
+  } else {
+    $('auth-err').style.display='block';
+    $('auth-pass').value='';
+    $('auth-pass').focus();
+  }
+}
+$('auth-pass').addEventListener('keydown',function(e){if(e.key==='Enter')checkAuth();});
+
+function changePassword(){
+  var cur=$('pw-current').value,nw=$('pw-new').value,conf=$('pw-confirm').value;
+  if(cur!==getPass()){toast('Current password incorrect','err');return;}
+  if(!nw){toast('New password cannot be empty','err');return;}
+  if(nw!==conf){toast('Passwords do not match','err');return;}
+  localStorage.setItem(PASS_KEY,nw);
+  $('pw-current').value=$('pw-new').value=$('pw-confirm').value='';
+  toast('Password changed successfully ✓');
+}
+
+/* ── Toast ── */
+function toast(msg,type){
+  $('toast-msg').textContent=msg;
+  var t=$('toast');t.className='show';
+  if(type==='err')t.style.background='#3a0a0a'; else t.style.background='var(--navy)';
+  setTimeout(function(){t.classList.remove('show');},3400);
+}
+
+/* ── Tabs ── */
+var TABS=['dashboard','content','colors','media','social','applinks','api','settings'];
+function switchTab(t){
+  TABS.forEach(function(id){
+    var p=$('tab-'+id),b=$('sb-'+id);
+    if(p)p.classList.toggle('active',id===t);
+    if(b)b.classList.toggle('active',id===t);
+  });
+  if(t==='content')cmsPage('home',document.querySelector('.cms-tab'));
+  if(t==='colors')renderColors();
+  if(t==='media')renderMedia();
+  if(t==='social')loadSocial();
+  if(t==='applinks')loadAppLinks();
+  if(t==='api')renderApiQuick();
+  if(t==='settings')loadSettings();
+  if(t==='dashboard')renderDash();
+}
+
+/* ── Dashboard ── */
+function renderDash(){
+  var cfg=getCfg();
+  var apple=cfg['flypay_apple_url']||'';
+  var google=cfg['flypay_google_url']||'';
+  var socials=['social_x','social_snap','social_ig','social_li'];
+  var nSocial=socials.filter(function(k){return cfg[k]&&cfg[k].trim();}).length;
+  var el=$('dash-apple-status');if(el){el.textContent=apple?'Set':'Not Set';el.className='badge '+(apple?'bg-green':'bg-muted');}
+  el=$('dash-google-status');if(el){el.textContent=google?'Set':'Not Set';el.className='badge '+(google?'bg-green':'bg-muted');}
+  el=$('dash-social-status');if(el){el.textContent=nSocial+' / 4 set';el.className='badge '+(nSocial>0?'bg-cyan':'bg-muted');}
+  var stats=[
+    {lbl:'Pages',val:'4',icon:'📄',c:'var(--blue)'},
+    {lbl:'Apps',val:'1',icon:'📱',c:'var(--green)'},
+    {lbl:'Social Links',val:nSocial+'/4',icon:'🔗',c:'var(--cyan)'},
+    {lbl:'Custom Images',val:getMedia().length+'',icon:'🖼',c:'var(--sky)'},
+  ];
+  $('dash-stats').innerHTML=stats.map(function(s){
+    return '<div class="stat-card"><div class="stat-lbl">'+s.lbl+'</div><div style="float:right;font-size:1.2rem;margin-top:-22px">'+s.icon+'</div><div class="stat-val" style="color:'+s.c+'">'+s.val+'</div></div>';
+  }).join('');
+}
+
+/* ── CMS ── */
+var CMS={
+  home:{label:'Home',groups:[
+    {title:'Hero',fields:[
+      {id:'hero_badge',label:'Live Badge Text',type:'text'},
+      {id:'hero_tagline',label:'Tagline (mono)',type:'text'},
+      {id:'hero_h1_accent',label:'H1 Accent Words',type:'text'},
+      {id:'hero_sub',label:'Hero Subtitle',type:'textarea'},
+      {id:'hero_cta',label:'CTA Button Text',type:'text'},
+    ]},
+    {title:'Problem / Solution',fields:[
+      {id:'prob_title',label:'Section Title',type:'text'},
+      {id:'prob_body',label:'Body Text',type:'textarea'},
+      {id:'sol_1',label:'Solution Point 1',type:'text'},
+      {id:'sol_2',label:'Solution Point 2',type:'text'},
+      {id:'sol_3',label:'Solution Point 3',type:'text'},
+    ]},
+    {title:'CTA Section',fields:[
+      {id:'cta_title',label:'CTA Headline',type:'text'},
+      {id:'cta_sub',label:'CTA Description',type:'textarea'},
+    ]},
+    {title:'Footer',fields:[{id:'footer_desc',label:'Footer Description',type:'textarea'}]},
+  ]},
+  apps:{label:'Apps',groups:[
+    {title:'Page Header',fields:[{id:'apps_title',label:'Title',type:'text'},{id:'apps_sub',label:'Subtitle',type:'textarea'}]},
+    {title:'Coming Soon Apps',fields:[
+      {id:'app2_name',label:'App 2 Name',type:'text'},{id:'app2_desc',label:'App 2 Description',type:'textarea'},
+      {id:'app3_name',label:'App 3 Name',type:'text'},{id:'app3_desc',label:'App 3 Description',type:'textarea'},
+    ]},
+  ]},
+  about:{label:'About',groups:[
+    {title:'Page Header',fields:[
+      {id:'about_title',label:'Title',type:'text'},
+      {id:'about_p1',label:'Paragraph 1',type:'textarea'},
+      {id:'about_p2',label:'Paragraph 2',type:'textarea'},
+    ]},
+    {title:'Value Cards',fields:[
+      {id:'val_1_title',label:'Card 1 Title',type:'text'},{id:'val_1_body',label:'Card 1 Body',type:'textarea'},
+      {id:'val_2_title',label:'Card 2 Title',type:'text'},{id:'val_2_body',label:'Card 2 Body',type:'textarea'},
+      {id:'val_3_title',label:'Card 3 Title',type:'text'},{id:'val_3_body',label:'Card 3 Body',type:'textarea'},
+      {id:'val_4_title',label:'Card 4 Title',type:'text'},{id:'val_4_body',label:'Card 4 Body',type:'textarea'},
+    ]},
+  ]},
+  flypay:{label:'FlyPay Page',groups:[
+    {title:'Hero',fields:[
+      {id:'fp_tagline',label:'Tagline',type:'text'},
+      {id:'fp_sub',label:'Subtitle',type:'textarea'},
+    ]},
+    {title:'Download Section',fields:[
+      {id:'fp_dl_title',label:'Download Section Title',type:'text'},
+      {id:'fp_dl_sub',label:'Download Section Subtitle',type:'textarea'},
+    ]},
+  ]},
+  nav:{label:'Nav',groups:[
+    {title:'Navigation',fields:[
+      {id:'site_title',label:'Browser Tab Title',type:'text'},
+    ]},
+  ]},
+};
+var _cmsPage='home';
+function cmsPage(pk,btn){
+  _cmsPage=pk;
+  document.querySelectorAll('.cms-tab').forEach(function(b){b.classList.remove('active');});
+  if(btn)btn.classList.add('active');
+  var pg=CMS[pk];if(!pg)return;
+  var cfg=getCfg(),html='';
+  pg.groups.forEach(function(grp){
+    html+='<div class="field-group"><div class="field-group-title">'+escH(grp.title)+'</div>';
+    grp.fields.forEach(function(f){
+      var val=cfg[f.id]!==undefined?cfg[f.id]:'';
+      var sv=escH(String(val));
+      html+='<label class="fl">'+f.label+'</label>';
+      if(f.type==='textarea')html+='<textarea class="fi" id="ci-'+f.id+'">'+sv+'</textarea>';
+      else html+='<input class="fi" id="ci-'+f.id+'" type="text" value="'+sv+'" />';
+    });
+    html+='<button class="save-btn" onclick="cmsSave(\''+pk+'\',\''+escH(grp.title)+'\')">💾 Save '+escH(grp.title)+'</button></div>';
+  });
+  $('cms-body').innerHTML=html;
+}
+function cmsSave(pk,title){
+  var pg=CMS[pk];if(!pg)return;
+  var cfg=getCfg(),n=0;
+  pg.groups.forEach(function(grp){
+    if(grp.title!==title)return;
+    grp.fields.forEach(function(f){
+      var inp=$('ci-'+f.id);if(!inp)return;
+      cfg[f.id]=inp.value;n++;
+    });
+  });
+  saveCfg(cfg);toast('Saved '+n+' fields ✓');
+}
+
+/* ── Colors ── */
+var DEFAULTS={
+  '--bg':{name:'Cloud White',hex:'#EEF4FF'},
+  '--surface':{name:'Surface',hex:'#FFFFFF'},
+  '--navy':{name:'Midnight Navy',hex:'#07112B'},
+  '--deep':{name:'Deep Blue',hex:'#0D1F45'},
+  '--blue':{name:'Flight Blue',hex:'#1B6FFF'},
+  '--sky':{name:'Sky Blue',hex:'#4D9FFF'},
+  '--cyan':{name:'Horizon Cyan',hex:'#00C2E0'},
+  '--text':{name:'Body Text',hex:'#0A1628'},
+  '--muted':{name:'Muted',hex:'#5A6E8C'},
+  '--green':{name:'Green',hex:'#10B981'},
+  '--red':{name:'Red',hex:'#EF4444'},
+  '--amber':{name:'Amber',hex:'#D97706'},
+};
+function renderColors(){
+  var stored=getColors(),html='';
+  Object.keys(DEFAULTS).forEach(function(v){
+    var d=DEFAULTS[v],hex=stored[v]||d.hex,sid=v.replace('--','');
+    html+='<div class="color-item"><div class="color-swatch" id="cs-'+sid+'" style="background:'+hex+'" onclick="pickColor(\''+v+'\')" title="Click to change"></div>'+
+      '<div class="color-name">'+d.name+'</div>'+
+      '<div class="color-hex"><input type="text" id="ci-clr-'+sid+'" value="'+hex+'" style="background:none;border:none;font-family:\'IBM Plex Mono\',monospace;font-size:.68rem;color:var(--muted);width:100%;outline:none" onchange="previewColor(\''+v+'\',this.value)" /></div></div>';
+  });
+  $('color-grid').innerHTML=html;
+}
+function pickColor(v){
+  var sid=v.replace('--','');
+  var inp=$('ci-clr-'+sid);
+  var picker=$('clr-picker');
+  picker.value=inp?inp.value:DEFAULTS[v].hex;
+  picker.oninput=function(){previewColor(v,picker.value);};
+  picker.onchange=function(){previewColor(v,picker.value);};
+  picker.click();
+}
+function previewColor(v,hex){
+  if(!/^#[0-9A-Fa-f]{6}$/.test(hex))return;
+  var sid=v.replace('--','');
+  document.documentElement.style.setProperty(v,hex);
+  var s=$('cs-'+sid);if(s)s.style.background=hex;
+  var i=$('ci-clr-'+sid);if(i)i.value=hex;
+}
+function saveColors(){
+  var nc={};
+  Object.keys(DEFAULTS).forEach(function(v){
+    var i=$('ci-clr-'+v.replace('--',''));if(i)nc[v]=i.value;
+  });
+  localStorage.setItem('at-colors',JSON.stringify(nc));
+  Object.keys(nc).forEach(function(v){document.documentElement.style.setProperty(v,nc[v]);});
+  toast('Brand colors saved ✓');
+}
+function resetColors(){
+  if(!confirm('Reset all colors to brand defaults?'))return;
+  localStorage.removeItem('at-colors');
+  Object.keys(DEFAULTS).forEach(function(v){document.documentElement.style.removeProperty(v);});
+  renderColors();toast('Colors reset to defaults');
+}
+
+/* ── Media ── */
+var DEFAULT_MEDIA=[
+  {id:'dm1',name:'Cockpit Sunrise',url:'https://images.unsplash.com/photo-1473081556163-2a17de81fc97?auto=format&fit=crop&w=1800&q=75',tag:'hero'},
+  {id:'dm2',name:'Cockpit Dashboard',url:'https://images.unsplash.com/photo-1540339832862-474599807836?auto=format&fit=crop&w=900&q=80',tag:'side'},
+  {id:'dm3',name:'Airport Terminal',url:'https://images.unsplash.com/photo-1529074963764-98f45c47344b?auto=format&fit=crop&w=1800&q=65',tag:'strip'},
+  {id:'dm4',name:'Aircraft Cockpit',url:'https://images.unsplash.com/photo-1559628233-c5cca2aaa930?auto=format&fit=crop&w=900&q=80',tag:'prob'},
+  {id:'dm5',name:'Wing Above Clouds',url:'https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?auto=format&fit=crop&w=1800&q=65',tag:'sky'},
+  {id:'dm6',name:'Runway Night',url:'https://images.unsplash.com/photo-1578898887932-dce23a595ad4?auto=format&fit=crop&w=1400&q=70',tag:'cta'},
+  {id:'dm7',name:'Wing Sunset',url:'https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?auto=format&fit=crop&w=900&q=80',tag:'about'},
+];
+function getAllMedia(){
+  var custom=getMedia();
+  var ids=custom.map(function(m){return m.id;});
+  return DEFAULT_MEDIA.filter(function(m){return ids.indexOf(m.id)<0;}).concat(custom);
+}
+function renderMedia(){
+  $('media-grid').innerHTML=getAllMedia().map(function(m){
+    return '<div class="media-card" onclick="selectMedia(\''+escH(m.url)+'\')">'+
+      '<img class="media-thumb" src="'+escH(m.url)+'" alt="'+escH(m.name)+'" loading="lazy" onerror="this.style.background=\'var(--border)\'"/>'+
+      '<div class="media-info"><div class="media-name">'+escH(m.name)+'</div>'+
+      '<div style="font-family:\'IBM Plex Mono\',monospace;font-size:.58rem;color:var(--muted)">'+escH(m.tag||'')+'</div></div></div>';
+  }).join('');
+}
+function selectMedia(url){
+  $('media-apply-url').value=url;
+  toast('URL loaded — select section and click Apply');
+}
+function addMedia(){
+  var url=$('media-url').value.trim(),name=$('media-name').value.trim()||'Custom Image';
+  if(!url){toast('Enter an image URL','err');return;}
+  var lib=getMedia();lib.push({id:'mc'+Date.now(),name:name,url:url,tag:'custom'});
+  saveMedia(lib);renderMedia();$('media-url').value='';$('media-name').value='';toast('Image added ✓');
+}
+function applyMedia(){
+  var section=$('media-section').value,url=$('media-apply-url').value.trim();
+  if(!url){toast('Enter or select a URL first','err');return;}
+  setSetting(section,url);toast('Image applied to section ✓');
+}
+
+/* ── Social ── */
+function loadSocial(){
+  var cfg=getCfg();
+  ['x','snap','ig','li'].forEach(function(k){
+    var el=$('social-'+k+'-inp');
+    if(el)el.value=cfg['social_'+k]||'';
+  });
+}
+function saveSocial(){
+  var cfg=getCfg();
+  ['x','snap','ig','li'].forEach(function(k){
+    var el=$('social-'+k+'-inp');
+    if(el)cfg['social_'+k]=el.value.trim();
+  });
+  saveCfg(cfg);renderDash();toast('Social links saved ✓');
+}
+
+/* ── App Links ── */
+function loadAppLinks(){
+  var cfg=getCfg();
+  if($('apple-url-inp'))$('apple-url-inp').value=cfg['flypay_apple_url']||'';
+  if($('google-url-inp'))$('google-url-inp').value=cfg['flypay_google_url']||'';
+  updateAppLinkBadges(cfg);
+}
+function updateAppLinkBadges(cfg){
+  var apple=cfg['flypay_apple_url']||'';
+  var google=cfg['flypay_google_url']||'';
+  var ab=$('apple-status-badge');if(ab){ab.textContent=apple?'Set':'Not Set';ab.className='badge '+(apple?'bg-green':'bg-muted');}
+  var gb=$('google-status-badge');if(gb){gb.textContent=google?'Set':'Not Set';gb.className='badge '+(google?'bg-green':'bg-muted');}
+}
+function saveAppLinks(){
+  var cfg=getCfg();
+  cfg['flypay_apple_url']=($('apple-url-inp')?$('apple-url-inp').value.trim():'');
+  cfg['flypay_google_url']=($('google-url-inp')?$('google-url-inp').value.trim():'');
+  saveCfg(cfg);updateAppLinkBadges(cfg);renderDash();toast('App Store links saved ✓');
+}
+
+/* ── API ── */
+function saveApiCfg(){
+  setSetting('api_base_url',$('api-base').value.trim());
+  setSetting('api_key',$('api-key').value.trim());
+  toast('API config saved ✓');
+}
+function buildHeaders(){
+  var key=getSetting('api_key','').trim()||($('api-key')?$('api-key').value.trim():'');
+  var h={'Content-Type':'application/json'};
+  if(key)h['Authorization']=key.startsWith('Bearer ')?key:'Bearer '+key;
+  return h;
+}
+function pj(s){try{return JSON.stringify(JSON.parse(s),null,2);}catch(e){return s;}}
+function testApi(){
+  var base=getSetting('api_base_url','').trim()||$('api-base').value.trim();
+  if(!base){toast('No API base URL configured','err');return;}
+  $('api-resp').textContent='Pinging '+base+' …';$('api-resp').className='api-resp';
+  var t0=Date.now();
+  fetch(base,{method:'GET',headers:buildHeaders()})
+    .then(function(r){return r.text().then(function(b){return{s:r.status,b:b};});})
+    .then(function(r){
+      $('api-meta').textContent=r.s+' · '+(Date.now()-t0)+'ms';
+      $('api-resp').className='api-resp ok';$('api-resp').textContent=pj(r.b);
+    })
+    .catch(function(e){$('api-resp').className='api-resp err';$('api-resp').textContent='Error:\n'+e.message;});
+}
+function sendReq(){
+  var base=getSetting('api_base_url','').trim()||$('api-base').value.trim();
+  var method=$('api-method').value,path=$('api-path').value.trim(),body=$('api-body').value.trim();
+  if(!base){toast('Configure API base URL first','err');return;}
+  var url=base.replace(/\/+$/,'')+'/'+path.replace(/^\//,'');
+  $('api-resp').textContent=method+' '+url+' …';$('api-resp').className='api-resp';
+  var opts={method:method,headers:buildHeaders()};
+  if(['POST','PUT','PATCH'].indexOf(method)>=0&&body)opts.body=body;
+  var t0=Date.now();
+  fetch(url,opts)
+    .then(function(r){return r.text().then(function(b){return{s:r.status,ok:r.ok,b:b};});})
+    .then(function(r){
+      $('api-meta').textContent=r.s+' · '+(Date.now()-t0)+'ms';
+      $('api-resp').className='api-resp '+(r.ok?'ok':'err');
+      $('api-resp').textContent=pj(r.b);
+    })
+    .catch(function(e){$('api-resp').className='api-resp err';$('api-resp').textContent='Error:\n'+e.message;});
+}
+function renderApiQuick(){
+  var ql=[
+    {m:'GET',p:'/users',d:'List all users'},
+    {m:'POST',p:'/users',d:'Create user'},
+    {m:'GET',p:'/apps',d:'List apps'},
+    {m:'GET',p:'/apps/:id/data',d:'Get app data'},
+    {m:'POST',p:'/apps/:id/data',d:'Post app data'},
+  ];
+  var el=$('api-quick');if(!el)return;
+  el.innerHTML=ql.map(function(q){
+    return '<div class="api-row" onclick="fillReq(\''+q.m+'\',\''+q.p+'\')">'+
+      '<span class="api-method m-'+q.m.toLowerCase()+'">'+q.m+'</span>'+
+      '<span class="api-path">'+escH(q.p)+'</span>'+
+      '<span style="color:var(--muted);font-size:.82rem">'+escH(q.d)+'</span></div>';
+  }).join('');
+}
+function fillReq(m,p){
+  $('api-method').value=m;$('api-path').value=p;
+  $('api-body').value=['POST','PUT','PATCH'].indexOf(m)>=0?'{\n  \n}':'';
+  switchTab('api');
+}
+
+/* ── Settings ── */
+function loadSettings(){
+  var cfg=getCfg();
+  if($('set-title'))$('set-title').value=cfg['site_title']||'Aviation Time — Always Clear for Takeoff';
+  if($('set-brand'))$('set-brand').value=cfg['setting_brand_name']||'AVIATION TIME';
+  if($('set-tagline'))$('set-tagline').value=cfg['setting_nav_tagline']||'Always Clear for Takeoff';
+  if($('api-base'))$('api-base').value=getSetting('api_base_url','');
+}
+function saveIdentity(){
+  var cfg=getCfg();
+  cfg['site_title']=$('set-title').value.trim();
+  cfg['setting_brand_name']=$('set-brand').value.trim();
+  cfg['setting_nav_tagline']=$('set-tagline').value.trim();
+  saveCfg(cfg);toast('Identity saved ✓');
+}
+function exportData(){
+  var data={config:getCfg(),colors:getColors(),media:getMedia(),version:'3.1',exported:new Date().toISOString()};
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+  a.download='aviation-time-config-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();toast('Config exported ✓');
+}
+function importData(){
+  var inp=document.createElement('input');inp.type='file';inp.accept='.json';
+  inp.onchange=function(){
+    var file=inp.files[0];if(!file)return;
+    var r=new FileReader();
+    r.onload=function(e){
+      try{
+        var d=JSON.parse(e.target.result);
+        if(d.config)saveCfg(d.config);
+        if(d.colors)localStorage.setItem('at-colors',JSON.stringify(d.colors));
+        if(d.media)saveMedia(d.media);
+        renderDash();loadSettings();toast('Config imported ✓');
+      }catch(err){toast('Invalid config file','err');}
+    };
+    r.readAsText(file);
+  };
+  inp.click();
+}
+function resetAll(){
+  if(!confirm('Reset ALL customizations? This cannot be undone.'))return;
+  ['at-site-config','at-colors','at-media'].forEach(function(k){localStorage.removeItem(k);});
+  renderDash();loadSettings();toast('All customizations reset');
+}
+
+/* ── Helpers ── */
+function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+/* ── Init ── */
+function initAdmin(){
+  renderDash();
+  renderColors();
+  renderMedia();
+  renderApiQuick();
+  loadSettings();
+  loadSocial();
+  loadAppLinks();
+}
+</script>
+</body>
+</html>

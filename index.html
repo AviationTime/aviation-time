@@ -3,403 +3,852 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aviation Time — Preparing for Takeoff</title>
-  <meta name="description" content="Aviation Time is coming soon. Smart aviation apps, built by aviators." />
-  <meta name="robots" content="noindex, nofollow" />
+  <title>Aviation Time Company — Smart Aviation Apps & Consultation Services</title>
+  <meta name="description" content="Aviation Time Company is a Saudi Arabian limited liability company developing smart applications and consultation services for aviation professionals. Based in Jeddah, KSA." />
+  <meta name="author" content="Aviation Time Company" />
+  <meta name="keywords" content="Aviation Time, aviation apps, Saudi Arabia, Jeddah, aviation consultation, aviation technology" />
+  <meta property="og:title" content="Aviation Time Company" />
+  <meta property="og:description" content="Smart aviation apps and consultation services. Built by aviators, for aviators. Jeddah, Saudi Arabia." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.aviationtime.com" />
+  <meta name="robots" content="index, follow" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800&family=Barlow:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
   <style>
-  /* ════════════════════════════════════
-     AVIATION TIME · HOLDING PATTERN
-     Coming Soon / Maintenance Page
-  ════════════════════════════════════ */
-  :root {
-    --navy:   #07112B;
-    --deep:   #0B1C3F;
-    --blue:   #1B6FFF;
-    --sky:    #4D9FFF;
-    --cyan:   #00C2E0;
-    --white:  #EEF4FF;
-    --muted:  rgba(238,244,255,0.45);
-    --dim:    rgba(238,244,255,0.18);
+  :root{
+    --bg:#EEF4FF;--surface:#FFFFFF;--card:#F4F8FF;
+    --navy:#07112B;--deep:#0D1F45;--blue:#1B6FFF;--sky:#4D9FFF;--cyan:#00C2E0;
+    --text:#0A1628;--muted:#5A6E8C;--border:rgba(27,111,255,.14);--border-s:rgba(27,111,255,.28);
+    --green:#10B981;--red:#EF4444;--amber:#D97706;
+    --shadow:0 4px 24px rgba(7,17,43,.10);--shadow-l:0 12px 48px rgba(7,17,43,.16);
   }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; overflow: hidden; }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;line-height:1.6;}
+  body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(27,111,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(27,111,255,.025) 1px,transparent 1px);background-size:52px 52px;}
+  ::-webkit-scrollbar{width:5px;}
+  ::-webkit-scrollbar-thumb{background:var(--blue);border-radius:3px;}
+  img{display:block;max-width:100%;}
+  a{color:var(--blue);text-decoration:none;}
+  a:hover{text-decoration:underline;}
 
-  body {
-    font-family: 'Barlow', sans-serif;
-    background: var(--navy);
-    color: var(--white);
-    display: flex; align-items: center; justify-content: center;
-    min-height: 100vh;
-    position: relative;
-    -webkit-font-smoothing: antialiased;
-  }
+  /* Layout */
+  .container{max-width:1140px;margin:0 auto;padding:0 24px;}
+  .section{padding:84px 0;position:relative;z-index:1;}
+  .page{display:none;min-height:100vh;padding-top:68px;}
+  .page.active{display:block;}
 
-  /* ── Background ── */
-  .bg-photo {
-    position: fixed; inset: 0; z-index: 0;
-    background-image: url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1800&q=70');
-    background-size: cover; background-position: center 30%;
-    filter: brightness(.28) saturate(0.7);
-  }
-  .bg-gradient {
-    position: fixed; inset: 0; z-index: 1;
-    background:
-      radial-gradient(ellipse 80% 60% at 50% 120%, rgba(27,111,255,.18) 0%, transparent 70%),
-      radial-gradient(ellipse 60% 40% at 80% 0%,   rgba(0,194,224,.1)   0%, transparent 60%),
-      linear-gradient(180deg, rgba(7,17,43,.6) 0%, rgba(7,17,43,.85) 100%);
-  }
-  /* Subtle grid overlay */
-  .bg-grid {
-    position: fixed; inset: 0; z-index: 1; pointer-events: none;
-    background-image:
-      linear-gradient(rgba(27,111,255,.06) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(27,111,255,.06) 1px, transparent 1px);
-    background-size: 60px 60px;
-    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
-  }
-  /* Animated scan line */
-  .scanline {
-    position: fixed; left: 0; right: 0; height: 2px; z-index: 2;
-    background: linear-gradient(90deg, transparent, rgba(0,194,224,.4), transparent);
-    animation: scan 6s linear infinite;
-  }
-  @keyframes scan { from{top:-2px} to{top:100vh} }
+  /* Animations */
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+  .fu1{animation:fadeUp .6s .08s ease both;}
+  .fu2{animation:fadeUp .6s .16s ease both;}
+  .fu3{animation:fadeUp .6s .24s ease both;}
+  .fu4{animation:fadeUp .6s .32s ease both;}
 
-  /* ── Main Card ── */
-  .card {
-    position: relative; z-index: 10;
-    width: min(780px, 92vw);
-    padding: 60px 64px;
-    text-align: center;
-  }
-  @media(max-width:600px){ .card { padding: 44px 28px; } }
+  /* Typography */
+  .section-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(1.8rem,4vw,2.7rem);line-height:1.12;letter-spacing:.01em;color:var(--navy);margin-bottom:14px;}
+  .accent{color:var(--blue);}
+  .accent-c{color:var(--cyan);}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);}
+  .label-wrap{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+  .label-line{width:28px;height:2px;background:var(--cyan);border-radius:2px;flex-shrink:0;}
 
-  /* ── Logo ── */
-  .logo-wrap {
-    display: flex; align-items: center; justify-content: center; gap: 14px;
-    margin-bottom: 44px;
-    animation: fadeDown .8s .1s ease both;
-  }
-  .logo-mark {
-    position: relative; width: 52px; height: 52px;
-    animation: rotateY 12s linear infinite;
-  }
-  @keyframes rotateY { 0%,100%{transform:rotateY(0deg)} 50%{transform:rotateY(6deg)} }
-  .logo-text-main {
-    font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
-    font-size: 1.25rem; letter-spacing: .05em; text-transform: uppercase;
-    line-height: 1.1;
-  }
-  .logo-text-main span { color: var(--blue); }
-  .logo-text-sub {
-    font-family: 'IBM Plex Mono', monospace; font-size: .55rem;
-    letter-spacing: .28em; text-transform: uppercase; color: var(--cyan);
-    margin-top: 3px;
-  }
+  /* Buttons */
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.04em;border-radius:9px;padding:13px 28px;cursor:pointer;transition:all .2s;border:none;text-decoration:none;}
+  .btn-primary{background:var(--blue);color:#fff;}
+  .btn-primary:hover{background:#0f5ce8;transform:translateY(-2px);box-shadow:0 8px 28px rgba(27,111,255,.35);text-decoration:none;}
+  .btn-outline{background:transparent;color:var(--blue);border:1.5px solid var(--border-s);}
+  .btn-outline:hover{background:rgba(27,111,255,.06);border-color:var(--blue);transform:translateY(-2px);text-decoration:none;}
+  .btn-light{background:rgba(255,255,255,.1);color:#fff;border:1.5px solid rgba(255,255,255,.25);}
+  .btn-light:hover{background:rgba(255,255,255,.2);text-decoration:none;}
 
-  /* ── Status pill ── */
-  .status-pill {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-family: 'IBM Plex Mono', monospace; font-size: .68rem;
-    letter-spacing: .18em; text-transform: uppercase;
-    color: var(--cyan); background: rgba(0,194,224,.1);
-    border: 1px solid rgba(0,194,224,.25); border-radius: 100px;
-    padding: 6px 18px; margin-bottom: 28px;
-    animation: fadeDown .8s .2s ease both;
-  }
-  .status-dot {
-    width: 7px; height: 7px; border-radius: 50%; background: var(--cyan);
-    animation: blink 1.4s ease-in-out infinite;
-  }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+  /* Cards */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);transition:all .3s;}
+  .card:hover{border-color:var(--border-s);box-shadow:var(--shadow-l);}
+  .badge{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:100px;}
+  .badge-green{background:rgba(16,185,129,.12);color:var(--green);}
+  .badge-blue{background:rgba(27,111,255,.12);color:var(--blue);}
+  .badge-cyan{background:rgba(0,194,224,.12);color:var(--cyan);}
+  .badge-muted{background:rgba(90,110,140,.1);color:var(--muted);}
+  .badge-amber{background:rgba(217,119,6,.12);color:var(--amber);}
 
-  /* ── Headlines ── */
-  h1 {
-    font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
-    font-size: clamp(2.6rem, 7vw, 5rem); line-height: 1.04;
-    letter-spacing: .01em; margin-bottom: 20px;
-    animation: fadeUp .7s .3s ease both;
-  }
-  h1 .accent { color: var(--sky); }
-  .sub {
-    font-size: clamp(.9rem, 2vw, 1.05rem); color: var(--muted);
-    line-height: 1.8; max-width: 500px; margin: 0 auto 44px;
-    animation: fadeUp .7s .4s ease both;
-  }
+  /* Forms */
+  .form-group{margin-bottom:14px;}
+  .form-label{display:block;font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+  .form-input,.form-textarea{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-family:'Barlow',sans-serif;font-size:.95rem;padding:11px 14px;transition:border-color .2s;outline:none;}
+  .form-input:focus,.form-textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(27,111,255,.1);}
+  .form-textarea{resize:vertical;min-height:130px;font-family:'Barlow',sans-serif;}
 
-  /* ── Countdown ── */
-  .countdown {
-    display: flex; gap: 24px; justify-content: center; margin-bottom: 44px;
-    animation: fadeUp .7s .5s ease both;
-    flex-wrap: wrap;
-  }
-  .cd-block {
-    display: flex; flex-direction: column; align-items: center;
-    min-width: 72px;
-  }
-  .cd-num {
-    font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
-    font-size: clamp(2.4rem, 6vw, 3.4rem); color: #fff; line-height: 1;
-    background: rgba(27,111,255,.08);
-    border: 1px solid rgba(27,111,255,.2);
-    border-radius: 12px; padding: 14px 20px; min-width: 80px;
-    text-align: center;
-    transition: all .3s;
-  }
-  .cd-label {
-    font-family: 'IBM Plex Mono', monospace; font-size: .58rem;
-    letter-spacing: .22em; text-transform: uppercase; color: var(--dim);
-    margin-top: 8px;
-  }
-  .cd-sep {
-    font-family: 'Barlow Condensed', sans-serif; font-weight: 300;
-    font-size: 2.4rem; color: var(--dim); align-self: center;
-    padding-bottom: 28px; animation: blink 1.4s infinite;
-  }
+  /* Nav */
+  #nav{position:fixed;top:0;left:0;right:0;z-index:900;background:rgba(7,17,43,.96);backdrop-filter:blur(16px);border-bottom:1px solid rgba(27,111,255,.2);}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1200px;margin:0 auto;padding:0 24px;height:68px;}
+  .nav-logo{display:flex;align-items:center;gap:11px;cursor:pointer;background:none;border:none;text-decoration:none;}
+  .nav-wordmark{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;letter-spacing:.03em;text-transform:uppercase;color:#fff;line-height:1;}
+  .nav-wordmark span{color:var(--blue);}
+  .nav-sub{font-family:'IBM Plex Mono',monospace;font-size:.5rem;letter-spacing:.28em;text-transform:uppercase;color:var(--cyan);margin-top:2px;}
+  .nav-links{display:flex;align-items:center;gap:2px;}
+  .nav-link{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.55);background:none;border:none;cursor:pointer;padding:8px 15px;border-radius:7px;transition:all .2s;}
+  .nav-link:hover{color:#fff;background:rgba(255,255,255,.07);text-decoration:none;}
+  .nav-link.active{color:var(--sky);background:rgba(77,159,255,.12);}
+  .mob-btn{display:none;background:none;border:1px solid rgba(255,255,255,.2);border-radius:7px;padding:8px 10px;cursor:pointer;color:#fff;}
+  #mob-menu{display:none;position:fixed;top:68px;left:0;right:0;z-index:899;background:rgba(7,17,43,.97);border-bottom:1px solid rgba(27,111,255,.2);padding:14px 24px 18px;flex-direction:column;gap:4px;}
+  #mob-menu.open{display:flex;}
+  .mob-link{font-family:'IBM Plex Mono',monospace;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6);background:none;border:none;cursor:pointer;padding:11px 14px;border-radius:8px;text-align:left;}
+  .mob-link:hover{color:#fff;background:rgba(255,255,255,.07);}
 
-  /* ── Notify form ── */
-  .notify-form {
-    display: flex; gap: 0; max-width: 420px; margin: 0 auto 40px;
-    border: 1.5px solid rgba(27,111,255,.3); border-radius: 10px;
-    overflow: hidden; background: rgba(7,17,43,.6);
-    backdrop-filter: blur(12px);
-    animation: fadeUp .7s .6s ease both;
-    transition: border-color .2s;
-  }
-  .notify-form:focus-within { border-color: rgba(27,111,255,.7); }
-  .notify-input {
-    flex: 1; background: none; border: none; outline: none;
-    color: var(--white); font-family: 'Barlow', sans-serif; font-size: .92rem;
-    padding: 13px 18px;
-  }
-  .notify-input::placeholder { color: rgba(238,244,255,.3); }
-  .notify-btn {
-    background: var(--blue); color: #fff; border: none; cursor: pointer;
-    font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
-    font-size: .8rem; letter-spacing: .06em; text-transform: uppercase;
-    padding: 13px 22px; transition: background .2s;
-    white-space: nowrap;
-  }
-  .notify-btn:hover { background: #0f5ce8; }
-  #notify-msg {
-    font-family: 'IBM Plex Mono', monospace; font-size: .72rem;
-    letter-spacing: .1em; color: var(--cyan); min-height: 20px;
-    margin-top: -30px; margin-bottom: 18px; text-align: center;
-    animation: fadeUp .3s ease;
-    display: none;
-  }
+  /* Hero */
+  #hero{min-height:calc(100vh - 68px);display:flex;align-items:center;padding:80px 0 60px;position:relative;overflow:hidden;}
+  .hero-bg{position:absolute;inset:0;z-index:0;background:linear-gradient(135deg,var(--navy) 0%,var(--deep) 60%,rgba(27,111,255,.18) 100%);}
+  .hero-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 30% 50%,rgba(0,194,224,.06) 0%,transparent 70%);}
+  .hero-content{position:relative;z-index:2;max-width:680px;}
+  .hero-tagline{font-family:'IBM Plex Mono',monospace;font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;color:var(--cyan);margin-bottom:14px;}
+  .hero-h1{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(2.4rem,5.2vw,4.2rem);line-height:1.05;color:#fff;margin-bottom:20px;}
+  .hero-h1 .hl{color:var(--sky);}
+  .hero-sub{font-size:1.02rem;color:rgba(255,255,255,.7);line-height:1.8;max-width:540px;margin-bottom:30px;}
+  .hero-btns{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:36px;}
+  .hero-meta{display:flex;gap:28px;padding-top:24px;border-top:1px solid rgba(255,255,255,.12);flex-wrap:wrap;}
+  .hero-meta-item{font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.12em;color:rgba(255,255,255,.5);}
+  .hero-meta-item strong{color:#fff;font-weight:500;display:block;font-size:.72rem;letter-spacing:.08em;margin-top:3px;}
 
-  /* ── Mode toggle ── */
-  .mode-badge {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-family: 'IBM Plex Mono', monospace; font-size: .66rem;
-    letter-spacing: .14em; text-transform: uppercase;
-    color: var(--dim); margin-bottom: 32px;
-    animation: fadeUp .7s .55s ease both;
-  }
-  .mode-icon { font-size: .9rem; }
+  /* Two col */
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;}
 
-  /* ── Footer bar ── */
-  .footer-bar {
-    position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
-    border-top: 1px solid rgba(27,111,255,.12);
-    background: rgba(7,17,43,.75); backdrop-filter: blur(16px);
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 12px 36px;
-    font-family: 'IBM Plex Mono', monospace; font-size: .62rem;
-    letter-spacing: .1em; text-transform: uppercase;
-    animation: fadeUp .6s .8s ease both;
-  }
-  .footer-left  { color: var(--dim); }
-  .footer-center{ color: var(--cyan); display: flex; align-items: center; gap: 8px; }
-  .footer-right { color: var(--dim); }
+  /* Apps grid */
+  .app-card{padding:36px;}
+  .app-icon{width:54px;height:54px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:26px;border:1px solid rgba(77,159,255,.2);}
+  .app-icon-blue{background:linear-gradient(135deg,var(--deep),var(--blue));}
+  .app-icon-cyan{background:linear-gradient(135deg,var(--deep),var(--cyan));}
+  .app-icon-sky{background:linear-gradient(135deg,var(--deep),var(--sky));}
 
-  /* ── Animations ── */
-  @keyframes fadeUp   { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
-  @keyframes fadeDown { from{opacity:0;transform:translateY(-14px)} to{opacity:1;transform:translateY(0)} }
+  /* Values */
+  .val-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .val-card{padding:26px;}
+  .val-emoji{font-size:1.8rem;margin-bottom:10px;}
+  .val-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.9rem;letter-spacing:.04em;text-transform:uppercase;color:var(--navy);margin-bottom:6px;}
 
-  /* ── Radar ring ── */
-  .radar {
-    position: fixed; right: -180px; bottom: -180px; z-index: 2;
-    width: 520px; height: 520px; border-radius: 50%;
-    border: 1px solid rgba(27,111,255,.07);
-    pointer-events: none;
+  /* CTA */
+  .cta-band{border-radius:22px;padding:60px;text-align:center;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--navy) 0%,var(--deep) 100%);}
+  .cta-band h2{color:#fff;font-size:clamp(1.7rem,3.4vw,2.5rem);font-weight:800;margin-bottom:14px;}
+  .cta-band p{color:rgba(255,255,255,.62);max-width:480px;margin:0 auto 28px;font-size:.96rem;line-height:1.7;}
+
+  /* Contact */
+  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:start;}
+  .contact-info{padding:32px;}
+  .contact-row{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--border);}
+  .contact-row:last-child{border-bottom:none;padding-bottom:0;}
+  .contact-icon{width:38px;height:38px;border-radius:10px;background:rgba(27,111,255,.08);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+  .contact-label{font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
+  .contact-value{font-size:.92rem;color:var(--text);font-weight:500;line-height:1.6;}
+  .contact-value a{color:var(--blue);}
+
+  /* Legal */
+  .legal-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:32px;flex-wrap:wrap;}
+  .legal-tab-btn{padding:12px 24px;background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;color:var(--muted);transition:all .2s;}
+  .legal-tab-btn.active{color:var(--blue);border-bottom-color:var(--blue);}
+  .legal-body{font-size:.94rem;line-height:1.85;color:var(--text);}
+  .legal-intro{font-size:.98rem;color:var(--muted);padding:16px 22px;background:rgba(27,111,255,.04);border-left:3px solid var(--blue);border-radius:0 10px 10px 0;margin-bottom:28px;line-height:1.85;}
+  .legal-body h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.05rem;color:var(--navy);margin:28px 0 9px;padding-bottom:7px;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.02em;}
+  .legal-body p{margin-bottom:12px;color:var(--muted);}
+  .legal-body ul{margin:8px 0 14px 22px;}
+  .legal-body li{margin-bottom:6px;color:var(--muted);}
+  .legal-body strong{color:var(--navy);font-weight:600;}
+  .legal-doc-card{padding:38px;}
+  .legal-doc-header{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border);}
+  .legal-doc-num{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--cyan);margin-bottom:5px;}
+  .legal-doc-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.7rem;color:var(--navy);}
+  .legal-doc-meta{text-align:right;}
+  .legal-doc-meta-lbl{font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--muted);}
+  .legal-doc-meta-val{font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--navy);font-weight:500;}
+
+  /* Toast */
+  #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:11px 22px;border-radius:100px;font-family:'IBM Plex Mono',monospace;font-size:.74rem;letter-spacing:.08em;display:flex;align-items:center;gap:7px;z-index:9999;opacity:0;transition:opacity .25s;pointer-events:none;border:1px solid rgba(0,194,224,.3);}
+  #toast.show{opacity:1;}
+
+  /* Footer */
+  footer{background:var(--navy);color:rgba(255,255,255,.5);padding:52px 0 28px;position:relative;z-index:1;}
+  .footer-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1.3fr;gap:36px;margin-bottom:36px;}
+  .footer-brand-desc{font-size:.85rem;line-height:1.7;margin-top:12px;max-width:260px;}
+  .footer-col h4{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:14px;}
+  .footer-link{display:block;background:none;border:none;color:rgba(255,255,255,.5);font-size:.86rem;cursor:pointer;padding:4px 0;transition:color .2s;text-align:left;font-family:'Barlow',sans-serif;text-decoration:none;}
+  .footer-link:hover{color:rgba(255,255,255,.95);text-decoration:none;}
+  .footer-info{font-family:'IBM Plex Mono',monospace;font-size:.7rem;line-height:1.85;color:rgba(255,255,255,.4);}
+  .footer-info strong{color:rgba(255,255,255,.7);font-weight:500;}
+  .footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+  .footer-copy{font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.08em;color:rgba(255,255,255,.45);}
+  .footer-reg{font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--cyan);letter-spacing:.08em;}
+  .footer-inline-link{background:none;border:none;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.08em;color:rgba(255,255,255,.32);transition:color .2s;padding:0;text-decoration:none;}
+  .footer-inline-link:hover{color:rgba(255,255,255,.7);text-decoration:none;}
+
+  /* Responsive */
+  @media(max-width:1024px){
+    .two-col{grid-template-columns:1fr;}
+    .footer-grid{grid-template-columns:1fr 1fr;gap:30px;}
+    .contact-grid{grid-template-columns:1fr;}
   }
-  .radar::before {
-    content: ''; position: absolute; inset: 40px; border-radius: 50%;
-    border: 1px solid rgba(27,111,255,.07);
+  @media(max-width:768px){
+    .nav-links{display:none;}
+    .mob-btn{display:block;}
+    .section{padding:60px 0;}
+    .val-grid{grid-template-columns:1fr;}
+    .footer-grid{grid-template-columns:1fr;}
+    .cta-band{padding:38px 22px;}
+    .legal-doc-card{padding:24px;}
+    .app-card{padding:24px;}
   }
-  .radar::after {
-    content: ''; position: absolute; inset: 110px; border-radius: 50%;
-    border: 1px dashed rgba(0,194,224,.09);
-  }
-  .radar-sweep {
-    position: fixed; right: -180px; bottom: -180px; z-index: 2;
-    width: 520px; height: 520px; border-radius: 50%;
-    overflow: hidden; pointer-events: none;
-  }
-  .radar-sweep::before {
-    content: ''; position: absolute; inset: 0; border-radius: 50%;
-    background: conic-gradient(from 0deg, transparent 85%, rgba(0,194,224,.12) 100%);
-    animation: sweepRadar 4s linear infinite;
-  }
-  @keyframes sweepRadar { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
   </style>
 </head>
 <body>
 
-<div class="bg-photo"></div>
-<div class="bg-gradient"></div>
-<div class="bg-grid"></div>
-<div class="scanline"></div>
-<div class="radar"></div>
-<div class="radar-sweep"></div>
-
-<div class="card">
-
-  <!-- Logo -->
-  <div class="logo-wrap">
-    <svg class="logo-mark" viewBox="0 0 96 96" fill="none">
-      <circle cx="48" cy="48" r="42" stroke="#1B6FFF" stroke-width="4" fill="none" opacity=".7"/>
-      <circle cx="48" cy="48" r="28" stroke="rgba(27,111,255,.2)" stroke-width="1" fill="none"/>
-      <line x1="48" y1="6" x2="48" y2="18" stroke="#00C2E0" stroke-width="3" stroke-linecap="round"/>
-      <line x1="48" y1="78" x2="48" y2="90" stroke="#00C2E0" stroke-width="3" stroke-linecap="round" opacity=".3"/>
-      <line x1="6"  y1="48" x2="18" y2="48" stroke="#00C2E0" stroke-width="3" stroke-linecap="round" opacity=".3"/>
-      <line x1="78" y1="48" x2="90" y2="48" stroke="#00C2E0" stroke-width="3" stroke-linecap="round" opacity=".3"/>
-      <g transform="translate(48,48) rotate(-30)">
-        <ellipse cx="0" cy="0" rx="3.5" ry="17" fill="#EEF4FF"/>
-        <path d="M-3,-2 L-22,10 L-22,14 L-3,5 Z" fill="#EEF4FF" opacity=".85"/>
-        <path d="M3,-2 L22,10 L22,14 L3,5 Z"     fill="#EEF4FF" opacity=".85"/>
-      </g>
-      <circle cx="48" cy="48" r="3" fill="#1B6FFF"/>
-      <polygon points="48,4 51,11 48,9 45,11" fill="#00C2E0"/>
-    </svg>
-    <div>
-      <div class="logo-text-main">AVIATION <span>TIME</span></div>
-      <div class="logo-text-sub">aviationtime.com</div>
+<!-- ══ NAV ══════════════════════════════════════════ -->
+<nav id="nav">
+  <div class="nav-inner">
+    <button class="nav-logo" onclick="showPage('home')" aria-label="Aviation Time Company home">
+      <svg width="34" height="34" viewBox="0 0 96 96" fill="none">
+        <circle cx="48" cy="48" r="42" stroke="#1B6FFF" stroke-width="4" fill="none" opacity=".7"/>
+        <line x1="48" y1="6" x2="48" y2="18" stroke="#00C2E0" stroke-width="3" stroke-linecap="round"/>
+        <g transform="translate(48,48) rotate(-30)">
+          <ellipse cx="0" cy="0" rx="3.5" ry="17" fill="#EEF4FF"/>
+          <path d="M-3,-2 L-22,10 L-22,14 L-3,5 Z" fill="#EEF4FF" opacity=".85"/>
+          <path d="M3,-2 L22,10 L22,14 L3,5 Z" fill="#EEF4FF" opacity=".85"/>
+        </g>
+        <circle cx="48" cy="48" r="3" fill="#1B6FFF"/>
+      </svg>
+      <div>
+        <div class="nav-wordmark">AVIATION <span>TIME</span></div>
+        <div class="nav-sub">Always Clear for Takeoff</div>
+      </div>
+    </button>
+    <div class="nav-links">
+      <button class="nav-link active" id="nl-home" onclick="showPage('home')">Home</button>
+      <button class="nav-link" id="nl-about" onclick="showPage('about')">About</button>
+      <button class="nav-link" id="nl-contact" onclick="showPage('contact')">Contact</button>
     </div>
+    <button class="mob-btn" onclick="toggleMob()" aria-label="Open menu">☰</button>
   </div>
+</nav>
+<div id="mob-menu">
+  <button class="mob-link" onclick="showPage('home');closeMob()">Home</button>
+  <button class="mob-link" onclick="showPage('about');closeMob()">About</button>
+  <button class="mob-link" onclick="showPage('contact');closeMob()">Contact</button>
+</div>
+<div id="toast">✓ <span id="toast-msg"></span></div>
 
-  <!-- Status pill -->
-  <div id="page-mode" class="status-pill">
-    <div class="status-dot"></div>
-    <span id="mode-label">Preparing for Takeoff</span>
-  </div>
+<!-- ══ PAGE: HOME ════════════════════════════════════ -->
+<div id="page-home" class="page active">
 
-  <!-- Headline -->
-  <h1>
-    We're in the<br>
-    <span class="accent" id="main-headline">Holding Pattern.</span>
-  </h1>
-  <p class="sub" id="sub-text">
-    Aviation Time is being polished for launch. Our apps and services are in final testing — we'll be cleared for takeoff very soon.
-  </p>
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="container hero-content">
+      <div class="fu1" style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+        <span style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:100px;padding:5px 16px;font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.85)">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--cyan);display:inline-block;animation:blink 1.5s infinite"></span>
+          Saudi Arabia · Established 2026
+        </span>
+      </div>
+      <div class="hero-tagline fu1">Aviation Time Company</div>
+      <h1 class="hero-h1 fu2">
+        Smart Aviation Tools.<br><span class="hl">Built by Aviators.</span>
+      </h1>
+      <p class="hero-sub fu3">Aviation Time Company is a Saudi Arabian limited liability company developing modern applications and consultation services for aviation professionals worldwide. Headquartered in Jeddah, we combine deep regulatory expertise with smart technology.</p>
+      <div class="hero-btns fu4">
+        <button class="btn btn-primary" onclick="showPage('about')">About Aviation Time →</button>
+        <button class="btn btn-light" onclick="showPage('contact')">Contact Us</button>
+      </div>
+      <div class="hero-meta fu4">
+        <div class="hero-meta-item">Headquarters<strong>Jeddah, Saudi Arabia</strong></div>
+        <div class="hero-meta-item">Established<strong>2026</strong></div>
+        <div class="hero-meta-item">Entity Type<strong>LLC · Active</strong></div>
+        <div class="hero-meta-item">Industry<strong>Aviation Technology</strong></div>
+      </div>
+    </div>
+  </section>
 
-  <!-- Mode info -->
-  <div class="mode-badge">
-    <span class="mode-icon" id="mode-icon">🛠</span>
-    <span id="mode-detail">Under Maintenance · Back shortly</span>
-  </div>
+  <!-- What We Do -->
+  <section class="section">
+    <div class="container">
+      <div style="max-width:760px;margin:0 auto">
+        <div class="label-wrap"><div class="label-line"></div><span class="label">What We Do</span></div>
+        <h2 class="section-title">Solving Real Problems for <span class="accent">Aviation Professionals</span></h2>
+        <p style="color:var(--muted);line-height:1.85;margin-bottom:18px;font-size:.97rem">Aviation Time Company develops a focused suite of mobile applications and provides expert consultation services for pilots, cabin crew, and aviation professionals throughout Saudi Arabia and the wider region.</p>
+        <p style="color:var(--muted);line-height:1.85;margin-bottom:32px;font-size:.97rem">We combine deep regulatory knowledge with modern technology to build tools that are precise, transparent, and respectful of our users' privacy.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+          <div style="padding:24px;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow)">
+            <div style="font-size:1.6rem;margin-bottom:10px">📱</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.9rem;text-transform:uppercase;letter-spacing:.04em;color:var(--navy);margin-bottom:6px">Mobile Apps</div>
+            <p style="color:var(--muted);font-size:.85rem;line-height:1.7">iOS and Android applications built for aviation professionals.</p>
+          </div>
+          <div style="padding:24px;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow)">
+            <div style="font-size:1.6rem;margin-bottom:10px">🗂</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.9rem;text-transform:uppercase;letter-spacing:.04em;color:var(--navy);margin-bottom:6px">Consultation</div>
+            <p style="color:var(--muted);font-size:.85rem;line-height:1.7">Expert guidance on aviation regulatory and operational matters.</p>
+          </div>
+          <div style="padding:24px;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow)">
+            <div style="font-size:1.6rem;margin-bottom:10px">📖</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.9rem;text-transform:uppercase;letter-spacing:.04em;color:var(--navy);margin-bottom:6px">Education</div>
+            <p style="color:var(--muted);font-size:.85rem;line-height:1.7">Articles, guides, and resources for the aviation community.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  <!-- Countdown -->
-  <div class="countdown" id="countdown-wrap">
-    <div class="cd-block"><div class="cd-num" id="cd-d">00</div><div class="cd-label">Days</div></div>
-    <div class="cd-sep">:</div>
-    <div class="cd-block"><div class="cd-num" id="cd-h">00</div><div class="cd-label">Hours</div></div>
-    <div class="cd-sep">:</div>
-    <div class="cd-block"><div class="cd-num" id="cd-m">00</div><div class="cd-label">Minutes</div></div>
-    <div class="cd-sep">:</div>
-    <div class="cd-block"><div class="cd-num" id="cd-s">00</div><div class="cd-label">Seconds</div></div>
-  </div>
+  <!-- CTA -->
+  <section class="section" style="padding-top:30px">
+    <div class="container">
+      <div class="cta-band">
+        <div class="label" style="color:rgba(255,255,255,.4);margin-bottom:14px;display:block">Get in Touch</div>
+        <h2>Working on Something Aviation-Related?</h2>
+        <p>Whether you're an aviation professional, partner, journalist, or simply curious about our work — we'd love to hear from you.</p>
+        <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+          <a href="mailto:support@aviationtime.com" class="btn btn-primary" style="background:#fff;color:var(--navy)">Email support@aviationtime.com</a>
+          <button class="btn btn-light" onclick="showPage('contact')">Contact Page</button>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  <!-- Notify -->
-  <div class="notify-form">
-    <input class="notify-input" id="email-inp" type="email" placeholder="your@email.com" onkeydown="if(event.key==='Enter')notify()" />
-    <button class="notify-btn" onclick="notify()">Notify Me</button>
-  </div>
-  <div id="notify-msg">✓ &nbsp;You're on the list. We'll reach out before we go live.</div>
-
+  <!-- Footer (shared - inserted via JS) -->
+  <div id="footer-host-home"></div>
 </div>
 
-<!-- Footer bar -->
-<div class="footer-bar">
-  <div class="footer-left">© <span id="yr"></span> Aviation Time</div>
-  <div class="footer-center">
-    <span style="width:6px;height:6px;border-radius:50%;background:var(--cyan);display:inline-block;animation:blink 1.4s infinite"></span>
-    ATC HOLDING CLEARANCE ACTIVE
-  </div>
-  <div class="footer-right">KSA · All rights reserved</div>
+<!-- ══ PAGE: ABOUT ═══════════════════════════════════ -->
+<div id="page-about" class="page">
+  <section class="section" style="padding-top:108px">
+    <div class="container" style="max-width:800px;margin:0 auto">
+      <div class="label-wrap fu1"><div class="label-line"></div><span class="label">About Us</span></div>
+      <h1 class="section-title fu2">Aviation Time Company</h1>
+      <p class="fu3" style="color:var(--muted);line-height:1.9;font-size:.97rem;margin-bottom:16px">Aviation Time Company is a Saudi Arabian limited liability company headquartered in Jeddah. We are officially registered with the Ministry of Commerce of the Kingdom of Saudi Arabia.</p>
+      <p style="color:var(--muted);line-height:1.9;font-size:.97rem;margin-bottom:16px">Founded in 2026 by aviation professionals, our company exists to solve real, daily challenges faced by pilots, cabin crew, and aviation industry workers — challenges we know intimately because we've lived them ourselves.</p>
+      <p style="color:var(--muted);line-height:1.9;font-size:.97rem;margin-bottom:48px">We focus on building tools that are precise, transparent, and respectful of our users' privacy. Every product we build is something a working aviator would actually use.</p>
+
+      <!-- Values -->
+      <div class="label-wrap"><div class="label-line"></div><span class="label">Our Values</span></div>
+      <h2 class="section-title" style="margin-bottom:32px">What We <span class="accent">Stand For</span></h2>
+      <div class="val-grid">
+        <div class="card val-card">
+          <div class="val-emoji">🎯</div>
+          <div class="val-title">Mission</div>
+          <p style="color:var(--muted);font-size:.88rem;line-height:1.75">Democratize access to aviation expertise. Every professional in our industry deserves clarity, transparency, and the right tools.</p>
+        </div>
+        <div class="card val-card">
+          <div class="val-emoji">🔭</div>
+          <div class="val-title">Vision</div>
+          <p style="color:var(--muted);font-size:.88rem;line-height:1.75">To become the most trusted aviation platform in the Middle East, supporting the Kingdom's Vision 2030 aviation sector growth.</p>
+        </div>
+        <div class="card val-card">
+          <div class="val-emoji">✈️</div>
+          <div class="val-title">Built by Aviators</div>
+          <p style="color:var(--muted);font-size:.88rem;line-height:1.75">We build only what we have used ourselves. Every feature is informed by real experience in the cockpit and cabin.</p>
+        </div>
+        <div class="card val-card">
+          <div class="val-emoji">🔒</div>
+          <div class="val-title">Privacy First</div>
+          <p style="color:var(--muted);font-size:.88rem;line-height:1.75">User data belongs to the user. We collect only what is necessary, store it securely, and never sell to third parties.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer-host-about"></div>
 </div>
+
+
+<!-- ══ PAGE: CONTACT ═════════════════════════════════ -->
+<div id="page-contact" class="page">
+  <section class="section" style="padding-top:108px">
+    <div class="container">
+      <div style="text-align:center;margin-bottom:46px">
+        <div class="label-wrap fu1" style="justify-content:center"><div class="label-line"></div><span class="label">Get in Touch</span><div class="label-line"></div></div>
+        <h1 class="section-title fu2">Contact <span class="accent">Aviation Time</span></h1>
+        <p class="fu3" style="color:var(--muted);max-width:480px;margin:10px auto 0;line-height:1.8">For all inquiries — partnerships, support, press, or general questions.</p>
+      </div>
+      <div class="contact-grid">
+        <!-- Info card -->
+        <div class="card contact-info">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.05rem;color:var(--navy);margin-bottom:18px;letter-spacing:.02em;text-transform:uppercase">Company Information</div>
+          <div class="contact-row">
+            <div class="contact-icon">🏢</div>
+            <div>
+              <div class="contact-label">Company</div>
+              <div class="contact-value">Aviation Time Company</div>
+            </div>
+          </div>
+          <div class="contact-row">
+            <div class="contact-icon">📍</div>
+            <div>
+              <div class="contact-label">Location</div>
+              <div class="contact-value">Jeddah, Saudi Arabia</div>
+            </div>
+          </div>
+          <div class="contact-row">
+            <div class="contact-icon">📞</div>
+            <div>
+              <div class="contact-label">Phone</div>
+              <div class="contact-value"><a href="tel:+966530015777">+966 53 001 5777</a></div>
+            </div>
+          </div>
+          <div class="contact-row">
+            <div class="contact-icon">✉️</div>
+            <div>
+              <div class="contact-label">Email</div>
+              <div class="contact-value"><a href="mailto:support@aviationtime.com">support@aviationtime.com</a></div>
+            </div>
+          </div>
+          <div class="contact-row">
+            <div class="contact-icon">🌐</div>
+            <div>
+              <div class="contact-label">Website</div>
+              <div class="contact-value"><a href="https://www.aviationtime.com">www.aviationtime.com</a></div>
+            </div>
+          </div>
+        </div>
+        <!-- Form -->
+        <div class="card" style="padding:32px">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.05rem;color:var(--navy);margin-bottom:16px;letter-spacing:.02em;text-transform:uppercase">Send Us a Message</div>
+          <p style="color:var(--muted);font-size:.84rem;margin-bottom:18px">All messages are sent directly to our official email. We respond within one business day.</p>
+          <div class="form-group"><label class="form-label">Your Name *</label><input class="form-input" id="cf-name" placeholder="Your full name" /></div>
+          <div class="form-group"><label class="form-label">Email Address *</label><input class="form-input" id="cf-email" type="email" placeholder="your@email.com" /></div>
+          <div class="form-group"><label class="form-label">Subject *</label><input class="form-input" id="cf-subject" placeholder="How can we help?" /></div>
+          <div class="form-group"><label class="form-label">Message *</label><textarea class="form-textarea" id="cf-msg" placeholder="Write your message here..."></textarea></div>
+          <button class="btn btn-primary" style="width:100%;justify-content:center;padding:13px" onclick="sendContact()">✈ &nbsp;Send Message</button>
+          <p style="color:var(--muted);font-size:.74rem;margin-top:12px;text-align:center;font-family:'IBM Plex Mono',monospace;line-height:1.7">This will open your email application. Alternatively, email us directly at <a href="mailto:support@aviationtime.com">support@aviationtime.com</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer-host-contact"></div>
+</div>
+
+<!-- ══ PAGE: LEGAL ═══════════════════════════════════ -->
+<div id="page-legal" class="page">
+  <section class="section" style="padding-top:108px">
+    <div class="container" style="max-width:830px">
+      <div class="label-wrap fu1"><div class="label-line"></div><span class="label">Legal</span></div>
+      <h1 class="section-title fu2">Legal <span class="accent">Documents</span></h1>
+      <p class="fu3" style="color:var(--muted);margin-bottom:30px;font-size:.93rem">Aviation Time Company is committed to transparency and full compliance with the laws of the Kingdom of Saudi Arabia, including the Personal Data Protection Law (PDPL).</p>
+      <div class="legal-tabs">
+        <button class="legal-tab-btn active" id="ltab-terms" onclick="legalTab('terms')">Terms of Service</button>
+        <button class="legal-tab-btn" id="ltab-privacy" onclick="legalTab('privacy')">Privacy Policy</button>
+        <button class="legal-tab-btn" id="ltab-disclaimer" onclick="legalTab('disclaimer')">Disclaimer</button>
+        <button class="legal-tab-btn" id="ltab-cookies" onclick="legalTab('cookies')">Cookie Notice</button>
+      </div>
+
+      <!-- TERMS -->
+      <div id="legal-terms">
+        <div class="card legal-doc-card">
+          <div class="legal-doc-header">
+            <div><div class="legal-doc-num">Document 01 of 04</div><div class="legal-doc-title">Terms of Service</div></div>
+            <div class="legal-doc-meta">
+              <div class="legal-doc-meta-lbl">Effective Date</div>
+              <div class="legal-doc-meta-val">15 February 2026</div>
+              <div class="legal-doc-meta-lbl" style="margin-top:6px">Last Updated</div>
+              <div class="legal-doc-meta-val">15 February 2026</div>
+            </div>
+          </div>
+          <div class="legal-body">
+            <p class="legal-intro">These Terms of Service ("Terms") constitute a legal agreement between you ("User", "you") and <strong>Aviation Time Company</strong> ("Company", "we", "us", "our"), a limited liability company duly registered in the Kingdom of Saudi Arabia under Commercial Registration Number 7053684465. By accessing this website (www.aviationtime.com) or using any service or application provided by Aviation Time Company, you agree to be bound by these Terms.</p>
+
+            <h3>1. About Aviation Time Company</h3>
+            <p>Aviation Time Company is a Saudi limited liability company (one-person LLC) registered with the Saudi Ministry of Commerce. The Company develops mobile software applications and provides consultation services for aviation professionals. Our official information is published on the Contact page of this website.</p>
+
+            <h3>2. Acceptance and Eligibility</h3>
+            <p>By using our website or services, you confirm that you are at least 18 years of age and have the legal capacity to enter into a binding agreement under the laws of the Kingdom of Saudi Arabia. If you do not agree to these Terms, you must not use our services.</p>
+
+            <h3>3. Services Provided</h3>
+            <p>Aviation Time Company offers the following:</p>
+            <ul>
+              <li><strong>Mobile Applications:</strong> Software applications for iOS and Android operating systems developed under the Aviation Time Company brand.</li>
+              <li><strong>Consultation Services:</strong> Professional consultation on aviation regulatory and operational matters.</li>
+              <li><strong>Educational Content:</strong> Articles, guides, and informational materials related to the aviation industry.</li>
+            </ul>
+
+            <h3>4. License and Permitted Use</h3>
+            <p>Subject to your compliance with these Terms, Aviation Time Company grants you a limited, non-exclusive, non-transferable, revocable license to use our applications and services for lawful personal purposes. You may not:</p>
+            <ul>
+              <li>Modify, reverse engineer, decompile, or attempt to derive source code from any application;</li>
+              <li>Use our services for any illegal, fraudulent, or unauthorized purpose;</li>
+              <li>Distribute, sell, sublicense, or commercially exploit any of our content without prior written authorization;</li>
+              <li>Remove or alter any copyright, trademark, or proprietary notices;</li>
+              <li>Use automated tools, bots, or scrapers to access or extract data from our services;</li>
+              <li>Engage in any activity that disrupts or damages our infrastructure.</li>
+            </ul>
+
+            <h3>5. Intellectual Property</h3>
+            <p>All content, software, designs, logos, trademarks, and proprietary materials made available through our website and applications are the exclusive property of Aviation Time Company or our licensors. The "Aviation Time" name and logo are trademarks of Aviation Time Company. Nothing in these Terms grants you any ownership rights in our intellectual property.</p>
+
+            <h3>6. User Accounts</h3>
+            <p>Some services may require you to create an account. You are responsible for maintaining the confidentiality of your account credentials, for all activity that occurs under your account, and for ensuring that all information you provide is accurate and up to date. Aviation Time Company reserves the right to suspend or terminate accounts that violate these Terms.</p>
+
+            <h3>7. Disclaimer of Warranties</h3>
+            <p>Our services are provided on an "as is" and "as available" basis, without warranties of any kind, whether express or implied. Aviation Time Company does not warrant that our services will be uninterrupted, error-free, or free of harmful components. Calculations or outputs produced by our applications are estimates intended for reference and planning purposes only, and must not be relied upon as official, legal, or financial documentation. Always verify with official sources.</p>
+
+            <h3>8. Limitation of Liability</h3>
+            <p>To the maximum extent permitted by the laws of the Kingdom of Saudi Arabia, Aviation Time Company shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to loss of profits, revenue, data, employment, or goodwill, arising out of or in connection with your use of our services. Our aggregate liability for any claim shall not exceed the amount paid by you to Aviation Time Company in the twelve (12) months preceding the claim, or one hundred Saudi Riyals (100 SAR), whichever is greater.</p>
+
+            <h3>9. Subscription and Payments</h3>
+            <p>Some applications may offer paid features through subscription. All subscription transactions are processed through Apple App Store, Google Play Store, or other authorized payment processors, and are subject to their respective terms, including refund policies. Aviation Time Company does not directly process consumer credit card payments through this website.</p>
+
+            <h3>10. Modifications to Services and Terms</h3>
+            <p>Aviation Time Company reserves the right to modify, suspend, or discontinue any service at any time. We may update these Terms from time to time, and the revised version will be posted on this page with an updated effective date. Continued use of our services after such updates constitutes your acceptance of the revised Terms.</p>
+
+            <h3>11. Termination</h3>
+            <p>Aviation Time Company may terminate or suspend your access to our services at any time, with or without notice, for any reason including breach of these Terms. Upon termination, your right to use our services ceases immediately. Provisions that by their nature are intended to survive termination (including intellectual property, disclaimers, and limitation of liability) shall continue to apply.</p>
+
+            <h3>12. Governing Law and Jurisdiction</h3>
+            <p>These Terms shall be governed by and construed in accordance with the laws of the Kingdom of Saudi Arabia. Any dispute arising under or in connection with these Terms shall be submitted to the exclusive jurisdiction of the competent courts of Jeddah, Kingdom of Saudi Arabia.</p>
+
+            <h3>13. Contact Information</h3>
+            <p><strong>Aviation Time Company</strong><br>
+            3514 Awf Ibn Wail, An Naim District<br>
+            Jeddah 23621, Kingdom of Saudi Arabia<br>
+            Phone: <a href="tel:+966530015777">+966 53 001 5777</a><br>
+            Email: <a href="mailto:support@aviationtime.com">support@aviationtime.com</a><br>
+            Commercial Registration: 7053684465</p>
+
+            <p style="text-align:center;margin-top:24px;font-size:.84rem">© 2026 Aviation Time Company. All rights reserved.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRIVACY -->
+      <div id="legal-privacy" style="display:none">
+        <div class="card legal-doc-card">
+          <div class="legal-doc-header">
+            <div><div class="legal-doc-num">Document 02 of 04</div><div class="legal-doc-title">Privacy Policy</div></div>
+            <div class="legal-doc-meta">
+              <div class="legal-doc-meta-lbl">Effective Date</div>
+              <div class="legal-doc-meta-val">15 February 2026</div>
+              <div class="legal-doc-meta-lbl" style="margin-top:6px">Last Updated</div>
+              <div class="legal-doc-meta-val">15 February 2026</div>
+            </div>
+          </div>
+          <div class="legal-body">
+            <p class="legal-intro">Aviation Time Company is committed to protecting your privacy and complying with the <strong>Personal Data Protection Law (PDPL)</strong> of the Kingdom of Saudi Arabia, issued under Royal Decree No. M/19 dated 9/2/1443H, and its implementing regulations. This Privacy Policy explains how we collect, use, protect, and share your personal data.</p>
+
+            <h3>1. Data Controller</h3>
+            <p><strong>Aviation Time Company</strong> is the Data Controller responsible for personal data collected through our website and applications. We can be reached at:</p>
+            <p>Email: <a href="mailto:support@aviationtime.com">support@aviationtime.com</a></p>
+
+            <h3>2. Personal Data We Collect</h3>
+            <p>We collect personal data only when necessary to provide our services. Categories include:</p>
+            <ul>
+              <li><strong>Account Information:</strong> Name, email address, password (stored as a one-way hash), aviation role, and registration date — collected when you create an account on our applications.</li>
+              <li><strong>Application Data:</strong> Information you enter into our applications — stored locally on your device by default; uploaded to our servers only if you explicitly enable cloud synchronization.</li>
+              <li><strong>Usage Data:</strong> Anonymized information about how you interact with our services (pages visited, features used, time spent), used to improve performance.</li>
+              <li><strong>Technical Data:</strong> IP address, device identifier, operating system, browser type — collected automatically for security and analytics.</li>
+              <li><strong>Communications:</strong> Information you provide when contacting us, including the content of emails sent to us.</li>
+            </ul>
+
+            <h3>3. How We Use Your Personal Data</h3>
+            <p>We process your personal data only for lawful purposes, including:</p>
+            <ul>
+              <li>Creating and managing your user account;</li>
+              <li>Providing, maintaining, and improving our applications and services;</li>
+              <li>Synchronizing your data across your devices when you opt in to cloud services;</li>
+              <li>Communicating with you about your account, our services, and important updates;</li>
+              <li>Responding to your inquiries, support requests, and feedback;</li>
+              <li>Analyzing usage patterns to improve our services;</li>
+              <li>Detecting and preventing fraud, abuse, or unauthorized access;</li>
+              <li>Complying with legal obligations under Saudi law.</li>
+            </ul>
+            <p><strong>We do not sell, rent, or trade your personal data.</strong></p>
+
+            <h3>4. Legal Basis for Processing</h3>
+            <p>Under the PDPL, we rely on the following lawful bases:</p>
+            <ul>
+              <li><strong>Consent:</strong> Where you have given explicit consent (such as for cloud synchronization or optional communications).</li>
+              <li><strong>Contract:</strong> Processing necessary to provide services you have requested.</li>
+              <li><strong>Legitimate Interest:</strong> To improve services and ensure platform security, where this does not override your rights.</li>
+              <li><strong>Legal Obligation:</strong> To comply with applicable Saudi laws and regulations.</li>
+            </ul>
+
+            <h3>5. Data Storage and Local-First Architecture</h3>
+            <p>By default, application data you enter is stored <strong>only on your device</strong> using local storage and is never transmitted to our servers. Cloud synchronization is an optional feature that requires your explicit opt-in.</p>
+            <p>When cloud sync is enabled, data is stored on secure servers operated by trusted infrastructure providers and is encrypted in transit (TLS 1.2+) and at rest. Server infrastructure is located within or governed by jurisdictions compliant with Saudi data protection requirements.</p>
+
+            <h3>6. Data Sharing and Disclosure</h3>
+            <p>We do not share your personal data with third parties, except in the following limited circumstances:</p>
+            <ul>
+              <li><strong>Service Providers:</strong> Trusted vendors who provide infrastructure, hosting, analytics, or technical services on our behalf, under strict confidentiality and data processing agreements.</li>
+              <li><strong>Legal Requirements:</strong> When required by Saudi law, court order, or competent governmental authority.</li>
+              <li><strong>Business Transfers:</strong> In the event of a merger, acquisition, or sale of assets, with continued data protection obligations.</li>
+              <li><strong>With Your Consent:</strong> In any other case, only with your explicit prior consent.</li>
+            </ul>
+
+            <h3>7. International Data Transfers</h3>
+            <p>If your personal data is transferred outside the Kingdom of Saudi Arabia, we ensure that the recipient jurisdiction provides an adequate level of protection or that appropriate safeguards (such as contractual clauses) are in place, as required by the PDPL.</p>
+
+            <h3>8. Data Retention</h3>
+            <p>We retain your personal data only for as long as necessary for the purposes for which it was collected, or as required by applicable law. Account data is retained for the duration of your account and for up to five (5) years after account closure for legal and audit purposes. You may request earlier deletion (see Section 10).</p>
+
+            <h3>9. Data Security</h3>
+            <p>We implement technical and organizational measures to safeguard your personal data, including encrypted transmission (HTTPS / TLS), encrypted storage, access controls, regular security reviews, and breach response procedures. However, no electronic system is 100% secure, and we cannot guarantee absolute security.</p>
+
+            <h3>10. Your Rights Under the PDPL</h3>
+            <p>As a data subject, you have the following rights:</p>
+            <ul>
+              <li><strong>Right of access:</strong> Request a copy of personal data we hold about you;</li>
+              <li><strong>Right to rectification:</strong> Request correction of inaccurate or incomplete data;</li>
+              <li><strong>Right to erasure:</strong> Request deletion of your personal data, subject to legal retention obligations;</li>
+              <li><strong>Right to restriction:</strong> Request limitation of processing in certain circumstances;</li>
+              <li><strong>Right to data portability:</strong> Receive your data in a structured, machine-readable format;</li>
+              <li><strong>Right to object:</strong> Object to processing based on legitimate interests;</li>
+              <li><strong>Right to withdraw consent:</strong> Withdraw previously given consent at any time.</li>
+            </ul>
+            <p>To exercise any of these rights, contact us at <a href="mailto:support@aviationtime.com">support@aviationtime.com</a>. We respond within thirty (30) days. You also have the right to lodge a complaint with the <strong>Saudi Data and Artificial Intelligence Authority (SDAIA)</strong> if you believe your rights have been violated.</p>
+
+            <h3>11. Children's Privacy</h3>
+            <p>Our services are not directed at, nor intended for, individuals under the age of 18. We do not knowingly collect personal data from minors. If we learn that personal data of a minor has been collected, we will delete it promptly. Please contact us if you believe a minor has registered with our services.</p>
+
+            <h3>12. Cookies and Similar Technologies</h3>
+            <p>Our website uses minimal browser storage (localStorage) for session management and user preferences. We do not use cookies for advertising or third-party tracking. For details, see our <a href="javascript:legalTab('cookies')">Cookie Notice</a>.</p>
+
+            <h3>13. Changes to This Policy</h3>
+            <p>We may update this Privacy Policy periodically to reflect changes in our practices, technology, or legal requirements. The updated version will be posted on this page with a revised effective date. For material changes, we will notify registered users by email or by prominent notice on our platform. Continued use of our services after the updated policy takes effect constitutes acceptance.</p>
+
+            <h3>14. Contact Us</h3>
+            <p>For privacy-related questions or to exercise your rights:</p>
+            <p>Email: <a href="mailto:support@aviationtime.com">support@aviationtime.com</a></p>
+
+            <p style="text-align:center;margin-top:24px;font-size:.84rem">© 2026 Aviation Time Company. All rights reserved.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- DISCLAIMER -->
+      <div id="legal-disclaimer" style="display:none">
+        <div class="card legal-doc-card">
+          <div class="legal-doc-header">
+            <div><div class="legal-doc-num" style="color:var(--amber)">Document 03 of 04</div><div class="legal-doc-title">Disclaimer</div></div>
+            <div class="legal-doc-meta">
+              <div class="legal-doc-meta-lbl">Effective Date</div>
+              <div class="legal-doc-meta-val">15 February 2026</div>
+            </div>
+          </div>
+          <div class="legal-body">
+            <p class="legal-intro" style="border-left-color:var(--amber);background:rgba(217,119,6,.05)">⚠️ <strong>Important:</strong> Applications and tools provided by Aviation Time Company are reference and planning tools only. They are NOT official payroll, legal, regulatory, or financial documentation, and must not be used as the sole basis for any financial, employment, or legal decision.</p>
+
+             <h3>Reference Tool Only</h3>
+            <p>Calculations and outputs produced by Aviation Time Company applications are estimates based on standard formulas and the data you input. Results may not reflect actual figures due to operator-specific agreements, government policy changes, individual circumstances, or other factors not captured by the application.</p> policy changes, individual employment circumstances, or other factors not captured by the application.</p>
+
+            <h3>No Affiliation with Airlines or Government</h3>
+            <p>Aviation Time Company is not affiliated with, endorsed by, or connected to any airline, the General Organization for Social Insurance (GOSI), the General Authority of Civil Aviation (GACA), or any Saudi government authority. Any use of trade names is solely for reference purposes.</p>
+
+            <h3>No Aviation Operational Use</h3>
+            <p>Our applications are not certified for aviation operational use, flight planning, navigation, or any safety-critical activity. They are productivity and reference tools for personal use only. For operational decisions, always rely on official, certified sources.</p>
+
+            <h3>Not Professional Advice</h3>
+            <p>Information provided through our website, applications, or consultation services does not constitute legal, financial, tax, or regulatory advice. For decisions with legal or financial consequences, consult qualified professionals.</p>
+
+            <h3>User Responsibility</h3>
+            <p>By using our services, you acknowledge and agree that:</p>
+            <ul>
+              <li>You will verify all calculations and information with official sources;</li>
+              <li>You will not rely on our outputs as the sole basis for any financial, employment, or legal decision;</li>
+              <li>Aviation Time Company is not liable for decisions you make based on our applications or services;</li>
+              <li>You use our services at your own risk and discretion.</li>
+            </ul>
+
+            <h3>Contact</h3>
+            <p>Questions about this disclaimer:<br>
+            Aviation Time Company<br>
+            Jeddah, Kingdom of Saudi Arabia<br>
+            Email: <a href="mailto:support@aviationtime.com">support@aviationtime.com</a></p>
+
+            <p style="text-align:center;margin-top:24px;font-size:.84rem">© 2026 Aviation Time Company. All rights reserved.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- COOKIES -->
+      <div id="legal-cookies" style="display:none">
+        <div class="card legal-doc-card">
+          <div class="legal-doc-header">
+            <div><div class="legal-doc-num">Document 04 of 04</div><div class="legal-doc-title">Cookie Notice</div></div>
+            <div class="legal-doc-meta">
+              <div class="legal-doc-meta-lbl">Effective Date</div>
+              <div class="legal-doc-meta-val">15 February 2026</div>
+            </div>
+          </div>
+          <div class="legal-body">
+            <p class="legal-intro">This Cookie Notice describes how Aviation Time Company uses cookies and similar browser-based storage technologies on our website www.aviationtime.com.</p>
+
+            <h3>1. What Are Cookies and Local Storage?</h3>
+            <p>Cookies are small text files placed on your device when you visit a website. <strong>localStorage</strong> is a similar browser feature that stores small amounts of data persistently. Both can be cleared by you at any time through your browser settings.</p>
+
+            <h3>2. Cookies We Use</h3>
+            <p>Aviation Time Company uses minimal browser storage. Currently, our website uses:</p>
+            <ul>
+              <li><strong>Strictly Necessary Storage:</strong> Used to remember your session, preferences (such as language or theme selection), and to ensure the website functions correctly. These cannot be disabled without breaking site functionality.</li>
+            </ul>
+            <p>We do <strong>not</strong> use:</p>
+            <ul>
+              <li>Advertising cookies</li>
+              <li>Third-party tracking cookies</li>
+              <li>Behavioral profiling cookies</li>
+              <li>Cross-site tracking pixels</li>
+            </ul>
+
+            <h3>3. Managing Cookies</h3>
+            <p>Most web browsers allow you to control cookies through their settings. You can:</p>
+            <ul>
+              <li>View and delete cookies stored on your device;</li>
+              <li>Block cookies from specific sites or all sites;</li>
+              <li>Be alerted before a cookie is stored.</li>
+            </ul>
+            <p>Disabling strictly necessary storage may affect how parts of our website function.</p>
+
+            <h3>4. Changes to This Notice</h3>
+            <p>We may update this Cookie Notice as our services evolve. The updated version will be posted on this page with a revised effective date.</p>
+
+            <h3>5. Contact</h3>
+            <p>Questions about cookies and similar technologies:<br>
+            Email: <a href="mailto:support@aviationtime.com">support@aviationtime.com</a></p>
+
+            <p style="text-align:center;margin-top:24px;font-size:.84rem">© 2026 Aviation Time Company. All rights reserved.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div id="footer-host-legal"></div>
+</div>
+
+<!-- ══ FOOTER TEMPLATE ═══════════════════════════════ -->
+<template id="footer-tpl">
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <svg width="28" height="28" viewBox="0 0 96 96" fill="none"><circle cx="48" cy="48" r="42" stroke="#1B6FFF" stroke-width="4" fill="none" opacity=".6"/><g transform="translate(48,48) rotate(-30)"><ellipse cx="0" cy="0" rx="3" ry="14" fill="white" opacity=".7"/><path d="M-3,-1 L-18,8 L-18,12 L-3,4 Z" fill="white" opacity=".5"/><path d="M3,-1 L18,8 L18,12 L3,4 Z" fill="white" opacity=".5"/></g><circle cx="48" cy="48" r="2.5" fill="#00C2E0"/></svg>
+            <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;letter-spacing:.03em;color:#fff">AVIATION <span style="color:var(--blue)">TIME</span> COMPANY</span>
+          </div>
+          <p class="footer-brand-desc">Smart aviation applications and consultation services. Saudi Arabian limited liability company, headquartered in Jeddah.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <button class="footer-link" data-page="home">Home</button>
+          <button class="footer-link" data-page="about">About</button>
+          <button class="footer-link" data-page="contact">Contact</button>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <button class="footer-link" data-legal="terms">Terms of Service</button>
+          <button class="footer-link" data-legal="privacy">Privacy Policy</button>
+          <button class="footer-link" data-legal="disclaimer">Disclaimer</button>
+          <button class="footer-link" data-legal="cookies">Cookie Notice</button>
+        </div>
+        <div class="footer-col">
+          <h4>Company Info</h4>
+          <div class="footer-info">
+            <strong>Aviation Time Company</strong><br>
+            Jeddah, Saudi Arabia<br><br>
+            <strong>📞</strong> <a href="tel:+966530015777" style="color:rgba(255,255,255,.6);text-decoration:none">+966 53 001 5777</a><br>
+            <strong>✉</strong> <a href="mailto:support@aviationtime.com" style="color:rgba(255,255,255,.6);text-decoration:none">support@aviationtime.com</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-copy">
+          © <span class="footer-yr"></span> Aviation Time Company. All rights reserved. &nbsp;·&nbsp;
+          <button class="footer-inline-link" data-legal="terms">Terms</button> &nbsp;·&nbsp;
+          <button class="footer-inline-link" data-legal="privacy">Privacy</button>
+        </div>
+        <div class="footer-reg">CR 7053684465 · D-U-N-S 986467687 · Saudi Arabia LLC</div>
+      </div>
+    </div>
+  </footer>
+</template>
 
 <script>
-/* ── CONFIG — edit these before deploying ── */
-var LAUNCH_DATE = new Date('2026-05-01T00:00:00');  // ← Set your launch date
-var MODE = 'maintenance';  // 'soon' = Coming Soon  |  'maintenance' = Under Maintenance
+'use strict';
+var $=function(id){return document.getElementById(id);};
 
-/* ── Mode UI ── */
-var MODES = {
-  soon: {
-    pill:     'Coming Soon',
-    headline: 'Almost Ready.',
-    sub:      'Aviation Time is launching very soon. Our apps and services are in final testing — we\'ll be cleared for takeoff shortly.',
-    icon:     '🚀',
-    detail:   'Coming Soon · Launch Countdown Active'
-  },
-  maintenance: {
-    pill:     'Under Maintenance',
-    headline: 'Holding Pattern.',
-    sub:      'Aviation Time is currently undergoing scheduled maintenance. We\'ll be back in the air shortly. Thank you for your patience.',
-    icon:     '🛠',
-    detail:   'Under Maintenance · Back Shortly'
-  }
-};
-var m = MODES[MODE] || MODES.maintenance;
-document.getElementById('mode-label').textContent   = m.pill;
-document.getElementById('main-headline').textContent = m.headline;
-document.getElementById('sub-text').textContent      = m.sub;
-document.getElementById('mode-icon').textContent     = m.icon;
-document.getElementById('mode-detail').textContent   = m.detail;
-
-/* ── Countdown ── */
-function pad(n){ return String(n).padStart(2,'0'); }
-function tick() {
-  var now  = Date.now();
-  var diff = LAUNCH_DATE.getTime() - now;
-  if (diff <= 0) {
-    document.getElementById('cd-d').textContent =
-    document.getElementById('cd-h').textContent =
-    document.getElementById('cd-m').textContent =
-    document.getElementById('cd-s').textContent = '00';
-    return;
-  }
-  document.getElementById('cd-d').textContent = pad(Math.floor(diff/86400000));
-  document.getElementById('cd-h').textContent = pad(Math.floor((diff%86400000)/3600000));
-  document.getElementById('cd-m').textContent = pad(Math.floor((diff%3600000)/60000));
-  document.getElementById('cd-s').textContent = pad(Math.floor((diff%60000)/1000));
+/* ── Pages ── */
+var PAGES=['home','about','contact','legal'];
+function showPage(p){
+  PAGES.forEach(function(id){var el=$('page-'+id);if(el)el.classList.remove('active');});
+  var t=$('page-'+p);if(t)t.classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(function(el){el.classList.remove('active');});
+  var nl=$('nl-'+p);if(nl)nl.classList.add('active');
+  if(p==='legal')legalTab('terms');
+  closeMob();
+  window.scrollTo({top:0,behavior:'smooth'});
+  /* Update URL hash for direct linking */
+  history.replaceState(null,'','#'+p);
 }
-tick(); setInterval(tick, 1000);
+function toggleMob(){$('mob-menu').classList.toggle('open');}
+function closeMob(){$('mob-menu').classList.remove('open');}
+document.addEventListener('click',function(e){
+  var nav=$('nav'),mm=$('mob-menu');
+  if(nav&&mm&&!nav.contains(e.target)&&!mm.contains(e.target))closeMob();
+});
 
-/* ── Notify ── */
-function notify() {
-  var email = document.getElementById('email-inp').value.trim();
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    document.getElementById('email-inp').style.color = '#ff6b6b';
-    setTimeout(function(){ document.getElementById('email-inp').style.color = ''; }, 1200);
-    return;
-  }
-  // Store locally; replace with your API call when backend is ready
-  var saved = JSON.parse(localStorage.getItem('at-waitlist') || '[]');
-  if (saved.indexOf(email) < 0) { saved.push(email); localStorage.setItem('at-waitlist', JSON.stringify(saved)); }
-  document.getElementById('email-inp').value = '';
-  var msg = document.getElementById('notify-msg');
-  msg.style.display = 'block';
-  // Wire to your real API: fetch('/api/waitlist', {method:'POST',body:JSON.stringify({email:email})})
+/* ── Legal tabs ── */
+function legalTab(t){
+  ['terms','privacy','disclaimer','cookies'].forEach(function(id){
+    var p=$('legal-'+id);if(p)p.style.display='none';
+    var b=$('ltab-'+id);if(b)b.classList.remove('active');
+  });
+  var sp=$('legal-'+t);if(sp)sp.style.display='block';
+  var sb=$('ltab-'+t);if(sb)sb.classList.add('active');
 }
 
-document.getElementById('yr').textContent = new Date().getFullYear();
+/* ── Contact form ── */
+function sendContact(){
+  var name=$('cf-name').value.trim(),email=$('cf-email').value.trim(),
+      subj=$('cf-subject').value.trim()||'Website Inquiry',msg=$('cf-msg').value.trim();
+  if(!name||!email||!msg){toast('Please fill in all required fields');return;}
+  var body='Name: '+name+'\nEmail: '+email+'\n\nMessage:\n'+msg;
+  var url='mailto:support@aviationtime.com?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(body);
+  window.location.href=url;
+  toast('Opening your email application…');
+}
+
+/* ── Toast ── */
+function toast(msg){
+  $('toast-msg').textContent=msg;
+  $('toast').classList.add('show');
+  setTimeout(function(){$('toast').classList.remove('show');},3200);
+}
+
+/* ── Mount footer on every page ── */
+function mountFooters(){
+  var tpl=$('footer-tpl');
+  if(!tpl)return;
+  PAGES.forEach(function(p){
+    var host=$('footer-host-'+p);
+    if(!host)return;
+    var clone=tpl.content.cloneNode(true);
+    /* Wire up links */
+    clone.querySelectorAll('[data-page]').forEach(function(btn){
+      var page=btn.getAttribute('data-page');
+      btn.addEventListener('click',function(){showPage(page);});
+    });
+    clone.querySelectorAll('[data-legal]').forEach(function(btn){
+      var tab=btn.getAttribute('data-legal');
+      btn.addEventListener('click',function(){showPage('legal');legalTab(tab);});
+    });
+    clone.querySelectorAll('.footer-yr').forEach(function(s){s.textContent=new Date().getFullYear();});
+    host.appendChild(clone);
+  });
+}
+
+/* ── Init ── */
+mountFooters();
+/* Hash routing for deep links */
+var hash=window.location.hash.replace('#','');
+if(hash&&PAGES.indexOf(hash)>=0)showPage(hash);
 </script>
 </body>
 </html>
